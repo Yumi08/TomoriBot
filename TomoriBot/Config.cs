@@ -33,5 +33,6 @@ namespace TomoriBot
 	{
 		public string token;
 		public string cmdPrefix;
+		public string botName;
 	}
 }

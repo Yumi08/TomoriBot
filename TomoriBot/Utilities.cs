@@ -22,5 +22,14 @@ namespace TomoriBot
 		{
 			return _alerts.ContainsKey(key) ? _alerts[key] : "ERR: KEY NOT FOUND.";
 		}
+
+		public static string GetFormattedAlert(string key, params object[] parameter)
+		{
+			if (_alerts.ContainsKey(key))
+			{
+				return String.Format(_alerts[key], parameter);
+			}
+			return "";
+		}
 	}
 }
