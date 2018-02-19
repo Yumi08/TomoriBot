@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord.Commands;
 
 namespace TomoriBot.Modules
@@ -26,6 +22,18 @@ namespace TomoriBot.Modules
 		public async Task Hug()
 		{
 			await Context.Channel.SendFileAsync("C:/Users/Yumi/Pictures/389F9492-2C33-4C49-9BDD-9FA92A686DCC.gif");
+		}
+
+		[Command("data")]
+		public async Task GetData()
+		{
+			await Context.Channel.SendMessageAsync("Data contains " + DataStorage.GetPairCount() + " pairs");
+		}
+
+		[Command("addpair")]
+		public void AddPair()
+		{
+			DataStorage.AddPairToStorage(Context.User.Username, "Name");
 		}
 	}
 }

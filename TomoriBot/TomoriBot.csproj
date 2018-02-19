@@ -134,6 +134,7 @@
   <ItemGroup>
     <Compile Include="CommandHandler.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="DataStorage.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Modules\Test.cs" />
     <Compile Include="Program.cs" />
@@ -146,6 +147,9 @@
     <None Include="SystemLang\alerts.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Core\UserProfiles\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
