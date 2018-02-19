@@ -9,6 +9,6 @@ namespace TomoriBot
 {
 	internal static class Global
 	{
-		
+		public static Random R = new Random();
 	}
 }

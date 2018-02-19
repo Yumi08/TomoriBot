@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Discord.Commands;
+using TomoriBot.Core.UserProfiles;
 
 namespace TomoriBot.Modules
 {
@@ -34,6 +35,20 @@ namespace TomoriBot.Modules
 		public void AddPair()
 		{
 			DataStorage.AddPairToStorage(Context.User.Username, "Name");
+		}
+
+		[Command("myXP")]
+		public async Task MyXp()
+		{
+			var account = UserAccounts.GetAccount(Context.User);
+			await Context.Channel.SendMessageAsync($"You have {account.Experience}XP.");
+		}
+
+		[Command("myMoney")]
+		public async Task MyMoney()
+		{
+			var account = UserAccounts.GetAccount(Context.User);
+			await Context.Channel.SendMessageAsync($"You have ¥{account.Yen}.");
 		}
 	}
 }
