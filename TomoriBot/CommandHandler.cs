@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Reflection;
+using TomoriBot.Core.LevelingSystem;
 
 namespace TomoriBot
 {
@@ -24,7 +25,12 @@ namespace TomoriBot
 			var msg = (SocketUserMessage) s;
 			if (msg == null) return;
 			var context = new SocketCommandContext(_client, msg);
-			int argPos = 0;
+			if (context.User.IsBot) return;
+
+			// Leveling up
+			Leveling.UserSentMessage((SocketGuildUser)context.User, (SocketTextChannel)context.Channel);
+
+			var argPos = 0;
 			if (msg.HasStringPrefix(Config.bot.cmdPrefix, ref argPos)
 			|| msg.HasMentionPrefix(_client.CurrentUser, ref argPos))
 			{
