@@ -9,7 +9,7 @@ namespace TomoriBot.Core.LevelingSystem
 		{
 			var userAccount = UserAccounts.GetAccount(user);
 
-			// Return if last message was within 0.2 minutes
+			// Return if last message was within the last minute
 			if ((Global.GetElapsedTime().TotalMinutes - userAccount.LastMessageTime) < 1) return;
 
 			// Set the last message time to right now

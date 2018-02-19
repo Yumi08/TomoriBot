@@ -13,6 +13,35 @@ namespace TomoriBot.Modules
 				Context.User.Username, Config.bot.botName));
 		}
 
+		[Command("exchange")]
+		public async Task Exchange(uint amt)
+		{
+			var account = UserAccounts.GetAccount(Context.User);
+			uint _yen = (uint)(amt / 13.5);
+			if (account.Experience < amt)
+			{
+				Context.Channel.SendMessageAsync("You don't have enough XP!");
+				return;
+			}
+			account.Experience -= amt;
+			account.Yen += _yen;
+			UserAccounts.SaveAccounts();
+			await Context.Channel.SendMessageAsync($"You just exchanged {amt}XP for ¥{_yen}");
+		}
+
+		[Command("exchangemax")]
+		public async Task ExchangeMax()
+		{
+			var account = UserAccounts.GetAccount(Context.User);
+			uint _yen = (uint)(account.Experience / 13.5);
+			await Context.Channel.SendMessageAsync($"You just exchanged {account.Experience}XP for ¥{_yen}");
+			
+			account.Experience -= account.Experience;
+			account.Yen += _yen;
+
+			UserAccounts.SaveAccounts();
+		}
+
 		[Command("echo")]
 		public async Task Echo([Remainder]string msg)
 		{
