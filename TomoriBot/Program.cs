@@ -7,6 +7,9 @@ namespace TomoriBot
 {
 	class Program
 	{
+		// TODO: GET RELEASE - X64 TO WORK
+		// NOTE: DEBUG IS CONFIGURED AS RELEASE
+
 		private DiscordSocketClient _client;
 		private CommandHandler _handler;
 
