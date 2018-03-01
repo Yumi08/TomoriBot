@@ -10,6 +10,55 @@ namespace TomoriBot.Modules
 	{
 		// TODO: GAMBLING SYSTEM
 
+		[Command("transfer")]
+		[Alias("give")]
+		public async Task Transfer(uint amt, SocketUser _recipient)
+		{
+			var account = UserAccounts.GetAccount(Context.User);
+			if (amt > account.Yen)
+			{
+				await Context.Channel.SendMessageAsync("You don't have that much money!");
+				return;
+			}
+
+			if (_recipient.Id == Context.User.Id)
+			{
+				await Context.Channel.SendMessageAsync("You can't send money to yourself!");
+				return;
+			}
+
+			var recipient = UserAccounts.GetAccount(_recipient);
+
+			account.Yen -= amt;
+			recipient.Yen += amt;
+
+			await Context.Channel.SendMessageAsync($"{_recipient.Mention} has been given ¥{amt} by {Context.User.Username}!");
+		}
+
+		[Command("bet")]
+		public async Task Bet(uint amt)
+		{
+			var account = UserAccounts.GetAccount(Context.User);
+			if (amt > account.Yen)
+			{
+				await Context.Channel.SendMessageAsync("You don't have that much money!");
+				return;
+			}
+
+			account.Yen -= amt;
+			if (Global.R.Next(1, 101) < 50)
+			{
+				uint winnings = amt * 3;
+				account.Yen += winnings;
+				await Context.Channel.SendMessageAsync($"Congratulations, you won ¥{winnings - amt}! You now have ¥{account.Yen}.");
+			}
+			else
+			{
+				await Context.Channel.SendMessageAsync($"Oh no, you lost! You now have ¥{account.Yen}.");
+			}
+
+		}
+
 		[Command("inventory")]
 		public async Task Inventory()
 		{
