@@ -17,5 +17,19 @@ namespace TomoriBot
 			long elapsedTicks = currentDate.Ticks - centuryBegin.Ticks;
 			return new TimeSpan(elapsedTicks);
 		}
+
+		public enum Food { Potato, Fish }
+
+		public static string FoodToString(Food food)
+		{
+			switch (food)
+			{
+				case Food.Potato:
+					return "potato";
+				case Food.Fish:
+					return "fish";
+				default: return "null";
+			}
+		}
 	}
 }

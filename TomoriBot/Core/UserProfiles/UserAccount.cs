@@ -15,7 +15,11 @@ namespace TomoriBot.Core.UserProfiles
 
 		public uint Experience { get; set; }
 
-		public uint LevelNumber => (uint)Math.Sqrt(Experience / 50);
+		public uint TotalMessages { get; set; }
+
+		public uint LevelNumber => (uint)Math.Sqrt(Experience / 150);
+
+		public uint Points { get; set; }
 
 		//Inventory
 		public uint Fish { get; set; }
