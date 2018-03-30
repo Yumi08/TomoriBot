@@ -11,7 +11,6 @@ namespace TomoriBot.Core.LevelingSystem
 
 			// Add to total messages & points
 			userAccount.TotalMessages++;
-			userAccount.Points += 1;
 			OnMessageAmount(user, channel, userAccount.TotalMessages);
 
 			// Return if last message was within the last minute
@@ -37,36 +36,36 @@ namespace TomoriBot.Core.LevelingSystem
 		{
 			switch (totalMsgs)
 			{
-				case 60:
-					SendMsgOMA(user, channel, totalMsgs);
+				case 100:
+					NotifyTotalMessages(user, channel, totalMsgs);
 					break;
 				case 500:
-					SendMsgOMA(user, channel, totalMsgs);
+					NotifyTotalMessages(user, channel, totalMsgs);
 					break;
 				case 1000:
-					SendMsgOMA(user, channel, totalMsgs);
+					NotifyTotalMessages(user, channel, totalMsgs);
 					break;
 				case 5000:
-					SendMsgOMA(user, channel, totalMsgs);
+					NotifyTotalMessages(user, channel, totalMsgs);
 					break;
 				case 10000:
-					SendMsgOMA(user, channel, totalMsgs);
+					NotifyTotalMessages(user, channel, totalMsgs);
 					break;
 				case 25000:
-					SendMsgOMA(user, channel, totalMsgs);
+					NotifyTotalMessages(user, channel, totalMsgs);
 					break;
 				case 50000:
-					SendMsgOMA(user, channel, totalMsgs);
+					NotifyTotalMessages(user, channel, totalMsgs);
 					break;
 				case 100000:
-					SendMsgOMA(user, channel, totalMsgs);
+					NotifyTotalMessages(user, channel, totalMsgs);
 					break;
 			}
 		}
 
-		private static async void SendMsgOMA(SocketGuildUser user, SocketTextChannel channel, uint totalMsgs)
+		private static async void NotifyTotalMessages(SocketGuildUser user, SocketTextChannel channel, uint totalMsgs)
 		{
-			await channel.SendMessageAsync($"{user.Username} has sent {totalMsgs} messages so far! Great job!");
+			await channel.SendMessageAsync($"{user.Username} has sent {totalMsgs} messages so far! Keep it up! <3");
 		}
 	}
 }

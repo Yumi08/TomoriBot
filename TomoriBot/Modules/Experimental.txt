@@ -8,6 +8,18 @@ namespace TomoriBot.Modules
 {
 	public class Experimental : ModuleBase<SocketCommandContext>
 	{
+		[Command("fact")]
+		public async Task Fact()
+		{
+			var subjects = new[] { "Yumi", "Craps", "Stellie" };
+			var indexS = Global.R.Next(subjects.Length);
+
+			var adjectives = new[] {"dumb", "smart", "weird", "lewd", "tasty", "orgasmic"};
+			var indexA = Global.R.Next(adjectives.Length);
+
+			await Context.Channel.SendMessageAsync($"{subjects[indexS]} is {adjectives[indexA]}.");
+		}
+
 		[Command("eat")]
 		public async Task Eat(uint amount, [Remainder] string input)
 		{

@@ -170,7 +170,9 @@
     <Compile Include="Core\UserProfiles\UserAccounts.cs" />
     <Compile Include="DataStorage.cs" />
     <Compile Include="Global.cs" />
-    <Compile Include="Modules\Experimental.cs" />
+    <Compile Include="Modules\Economy.cs" />
+    <Content Include="Modules\Experimental.txt" />
+    <Compile Include="Modules\Profile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
