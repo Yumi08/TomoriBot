@@ -15,20 +15,72 @@ namespace TomoriBot.Modules
 			                                         $"And the API latency is {Context.Client.Latency}ms.");
 		}
 
-		[Command("restart")]
+
+		// TODO: FIX RESTART COMMAND (does not update code)
+		[Obsolete("Does not work properly.")]
+		//[Command("restart")]
 		public async Task Restart()
 		{
-			if (Context.User.Id != 218429853144186883)
-			{
-				await Context.Channel.SendMessageAsync("Wat u think ur doin <:MiyanoDead:407275770151436289>");
-				return;
-			}
+			if (await ValidateUser()) return;
 
 			await Context.Channel.SendMessageAsync("Restarting!");
 
 			System.Diagnostics.Process.Start(
 				"C:\\Users\\Yumi\\source\\Console\\Discord\\TomoriBot\\TomoriBot\\bin\\Release\\TomoriBot.exe");
 			Environment.Exit(0);
+		}
+
+		[Command("resetdata")]
+		public async Task ResetData()
+		{
+			if (await ValidateUser()) return;
+
+			DataStorage.ResetData();	
+
+			await Context.Channel.SendMessageAsync("Data pairs reset!");
+		}
+
+		[Command("setdata")]
+		public async Task SetData(string key, [Remainder]string value)
+		{
+			if (await ValidateUser()) return;
+
+			if (!DataStorage.SetPair(key, value))
+			{
+				await Context.Channel.SendMessageAsync($"Updated value \"{value}\" to key \"{key}\"!");
+				return;
+			}
+
+			await Context.Channel.SendMessageAsync($"Set value \"{value}\" to key \"{key}\"!");
+		}
+
+		[Command("getdata")]
+		public async Task GetData(string key)
+		{
+			if (await ValidateUser()) return;
+
+			var value = DataStorage.GetPair(key, out bool success);
+
+			if (success) await Context.Channel.SendMessageAsync(value);
+			else await Context.Channel.SendMessageAsync("No value found for such key!");
+		}
+
+		[Command("getdata")]
+		public async Task GetData()
+		{
+			await Context.Channel.SendMessageAsync($"{DataStorage.GetPairCount()} pairs in storage!");
+		}
+
+
+		private async Task<bool> ValidateUser()
+		{
+			if (Context.User.Id != 218429853144186883)
+			{
+				await Context.Channel.SendMessageAsync("Wat u think ur doin <:MiyanoDead:407275770151436289>");
+				return true;
+			}
+
+			return false;
 		}
 	}
 }
