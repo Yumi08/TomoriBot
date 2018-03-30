@@ -4,11 +4,13 @@ using Newtonsoft.Json;
 
 namespace TomoriBot
 {
-	class DataStorage
+	class DataStorage<TKey, TValue>
 	{
-		private static Dictionary<string, string> _pairs = new Dictionary<string, string>();
+		private string filePath;
 
-		public static bool SetPair(string key, string value)
+		private Dictionary<TKey, TValue> _pairs = new Dictionary<TKey, TValue>();
+
+		public bool SetPair(TKey key, TValue value)
 		{
 			if (_pairs.ContainsKey(key))
 			{
@@ -22,51 +24,52 @@ namespace TomoriBot
 			return true;
 		}
 
-		public static string GetPair(string key, out bool success)
+		public TValue GetPair(TKey key, out bool success)
 		{
 			if (!_pairs.ContainsKey(key))
 			{
 				success = false;
-				return "";
+				return default(TValue);
 			}
 
 			success = true;
 			return _pairs[key];
 		}
 
-		public static int GetPairCount()
+		public int GetPairCount()
 		{
 			return _pairs.Count;
 		}
 
-		private static void _loadData()
+		private void _loadData()
 		{
-			if (!_validateStorageFile("DataStorage.json")) return;
-			string json = File.ReadAllText("DataStorage.json");
-			_pairs = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+			if (!_validateStorageFile(filePath)) return;
+			string json = File.ReadAllText(filePath);
+			_pairs = JsonConvert.DeserializeObject<Dictionary<TKey, TValue>>(json);
 		}
 
-		static DataStorage()
+		public DataStorage(string filePath)
 		{
+			this.filePath = filePath;
 			_loadData();
 		}
 
-		public static void ResetData()
+		public void ResetData()
 		{
-			File.WriteAllText("DataStorage.json", "{}");
+			File.WriteAllText(filePath, "{}");
 			_loadData();
 		}
 
-		public static void SaveData()
+		public void SaveData()
 		{
 			string json = JsonConvert.SerializeObject(_pairs, Formatting.Indented);
-			File.WriteAllText("DataStorage.json",json);
+			File.WriteAllText(filePath,json);
 		}
 
-		private static bool _validateStorageFile(string file)
+		private bool _validateStorageFile(string file)
 		{
 			if (File.Exists(file)) return true;
-			File.WriteAllText(file, "");
+			File.WriteAllText(file, "{}");
 			SaveData();
 			return false;
 

@@ -35,7 +35,9 @@ namespace TomoriBot.Modules
 		{
 			if (await ValidateUser()) return;
 
-			DataStorage.ResetData();	
+			var ds = new DataStorage<string, string>("DataStorage.json");
+
+			ds.ResetData();	
 
 			await Context.Channel.SendMessageAsync("Data pairs reset!");
 		}
@@ -45,7 +47,9 @@ namespace TomoriBot.Modules
 		{
 			if (await ValidateUser()) return;
 
-			if (!DataStorage.SetPair(key, value))
+			var ds = new DataStorage<string, string>("DataStorage.json");
+
+			if (!ds.SetPair(key, value))
 			{
 				await Context.Channel.SendMessageAsync($"Updated value \"{value}\" to key \"{key}\"!");
 				return;
@@ -59,7 +63,9 @@ namespace TomoriBot.Modules
 		{
 			if (await ValidateUser()) return;
 
-			var value = DataStorage.GetPair(key, out bool success);
+			var ds = new DataStorage<string, string>("DataStorage.json");
+
+			var value = ds.GetPair(key, out bool success);
 
 			if (success) await Context.Channel.SendMessageAsync(value);
 			else await Context.Channel.SendMessageAsync("No value found for such key!");
@@ -68,7 +74,9 @@ namespace TomoriBot.Modules
 		[Command("getdata")]
 		public async Task GetData()
 		{
-			await Context.Channel.SendMessageAsync($"{DataStorage.GetPairCount()} pairs in storage!");
+			var ds = new DataStorage<string, string>("DataStorage.json");
+
+			await Context.Channel.SendMessageAsync($"{ds.GetPairCount()} pairs in storage!");
 		}
 
 

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
+using TomoriBot.Core;
 
 namespace TomoriBot.Modules
 {
@@ -19,7 +20,9 @@ namespace TomoriBot.Modules
 		[Command("tag")]
 		public async Task Tag(SocketUser user, [Remainder]string value)
 		{
-			DataStorage.SetPair(user.Id.ToString(), value);
+			var ds = new DataStorage<ulong, string>("UserTags.json");
+
+			ds.SetPair(user.Id, value);
 
 			await Context.Channel.SendMessageAsync($"Tagged {user.Username} with {value}!");
 		}
