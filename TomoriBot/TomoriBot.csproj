@@ -172,7 +172,9 @@
     <Compile Include="Global.cs" />
     <Compile Include="Modules\Economy.cs" />
     <Content Include="Modules\Experimental.txt" />
+    <Compile Include="Modules\Fun.cs" />
     <Compile Include="Modules\Profile.cs" />
+    <Compile Include="Modules\Utility.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
