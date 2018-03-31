@@ -72,6 +72,13 @@ namespace TomoriBot.Modules
 
 			var ds = new DataStorage<string, uint>("DataStorage.json");
 			ds.SetPair("Buried", amt + ds.GetOrCreatePair("Buried"));
+
+			userAccount.Yen -= amt;
+
+			// Sends and deletes the message
+			var m = await Context.Channel.SendMessageAsync($"Buried {amt}!");
+			await Task.Delay(1200);
+			await m.DeleteAsync();
 		}
 
 		[Command("unbury")]
