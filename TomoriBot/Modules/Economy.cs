@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
+using TomoriBot.Core;
 using TomoriBot.Core.UserProfiles;
 
 namespace TomoriBot.Modules
@@ -13,11 +14,7 @@ namespace TomoriBot.Modules
 		{
 			var callerAccount = UserAccounts.GetAccount(Context.User);
 
-			if (amt > callerAccount.Yen)
-			{
-				await Context.Channel.SendMessageAsync("Sorry! You don't have that much money!");
-				return;
-			}
+			if (await CheckEnoughMoney(amt, callerAccount)) return;
 
 			if (Context.User.Id == recipient.Id)
 			{
@@ -31,6 +28,81 @@ namespace TomoriBot.Modules
 			recipientAccount.Yen += amt;
 
 			await Context.Channel.SendMessageAsync($"{recipient.Username} has been given ¥{amt} by {Context.User.Username}!");
+		}
+
+		[Command("bet")]
+		public async Task Bet(uint amt)
+		{
+			var userAccount = UserAccounts.GetAccount(Context.User);
+
+			if (await CheckEnoughMoney(amt, userAccount)) return;
+
+
+			userAccount.Yen -= amt;
+
+			if (Global.R.Next(2) == 1)
+			{
+				await Context.Channel.SendMessageAsync($"Congratulations! You just won ¥{amt * 2}!");
+				userAccount.Yen += amt * 2;
+				return;
+			}
+
+			await Context.Channel.SendMessageAsync("Oh no! I'm afraid you lost...");
+		}
+
+		[Command("dump")]
+		[Alias("trash")]
+		public async Task Dump(uint amt)
+		{
+			var userAccount = UserAccounts.GetAccount(Context.User);
+
+			if (await CheckEnoughMoney(amt, userAccount)) return;
+
+			userAccount.Yen -= amt;
+
+			await Context.Channel.SendMessageAsync($"Threw away ¥{amt}!");
+		}
+
+		[Command("bury")]
+		public async Task Bury(uint amt)
+		{
+			var userAccount = UserAccounts.GetAccount(Context.User);
+
+			if (await CheckEnoughMoney(amt, userAccount)) return;
+
+			var ds = new DataStorage<string, uint>("DataStorage.json");
+			ds.SetPair("Buried", amt + ds.GetOrCreatePair("Buried"));
+		}
+
+		[Command("unbury")]
+		public async Task Unbury()
+		{
+			var userAccount = UserAccounts.GetAccount(Context.User);
+
+			var ds = new DataStorage<string,uint>("DataStorage.json");
+			var buried = ds.GetOrCreatePair("Buried");
+
+			if (buried == 0)
+			{
+				await Context.Channel.SendMessageAsync("There is nothing buried!");
+				return;
+			}
+
+			userAccount.Yen += buried;
+			await Context.Channel.SendMessageAsync($"{Context.User.Username} unburied ¥{buried}!");
+			ds.SetPair("Buried", 0);
+		}
+
+
+		private async Task<bool> CheckEnoughMoney(uint amt, UserAccount userAccount)
+		{
+			if (amt > userAccount.Yen)
+			{
+				await Context.Channel.SendMessageAsync("Sorry! You don't have that much money!");
+				return true;
+			}
+
+			return false;
 		}
 	}
 }

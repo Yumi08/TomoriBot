@@ -36,6 +36,27 @@ namespace TomoriBot
 			return _pairs[key];
 		}
 
+		public TValue GetPair(TKey key)
+		{
+			if (!_pairs.ContainsKey(key))
+			{
+				return default(TValue);
+			}
+
+			return _pairs[key];
+		}
+
+		public TValue GetOrCreatePair(TKey key)
+		{
+			if (!_pairs.ContainsKey(key))
+			{
+				_pairs.Add(key, default(TValue));
+				SaveData();
+			}
+
+			return _pairs[key];
+		}
+
 		public int GetPairCount()
 		{
 			return _pairs.Count;
