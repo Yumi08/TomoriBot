@@ -3,6 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using TomoriBot.Core;
 using TomoriBot.Core.UserProfiles;
+using static TomoriBot.Utilities;
 
 namespace TomoriBot.Modules
 {
@@ -10,7 +11,7 @@ namespace TomoriBot.Modules
 	{
 		[Command("transfer")]
 		[Alias("give")]
-		public async Task Transfer(SocketUser recipient, uint amt)
+		public async Task Transfer(SocketGuildUser recipient, uint amt)
 		{
 			var callerAccount = UserAccounts.GetAccount(Context.User);
 
@@ -27,7 +28,7 @@ namespace TomoriBot.Modules
 			callerAccount.Yen -= amt;
 			recipientAccount.Yen += amt;
 
-			await Context.Channel.SendMessageAsync($"{recipient.Username} has been given ¥{amt} by {Context.User.Username}!");
+			await Context.Channel.SendMessageAsync($"{GetNickname(recipient)} has been given ¥{amt} by {GetNickname((SocketGuildUser)Context.User)}!");
 		}
 
 		[Command("bet")]
@@ -76,9 +77,10 @@ namespace TomoriBot.Modules
 			userAccount.Yen -= amt;
 
 			// Sends and deletes the message
-			var m = await Context.Channel.SendMessageAsync($"Buried {amt}!");
+			var m = await Context.Channel.SendMessageAsync($"Buried ¥{amt}!");
 			await Task.Delay(1200);
 			await m.DeleteAsync();
+			await Context.Message.DeleteAsync();
 		}
 
 		[Command("unbury")]
@@ -96,7 +98,7 @@ namespace TomoriBot.Modules
 			}
 
 			userAccount.Yen += buried;
-			await Context.Channel.SendMessageAsync($"{Context.User.Username} unburied ¥{buried}!");
+			await Context.Channel.SendMessageAsync($"{GetNickname((SocketGuildUser)Context.User)} unburied ¥{buried}!");
 			ds.SetPair("Buried", 0);
 		}
 

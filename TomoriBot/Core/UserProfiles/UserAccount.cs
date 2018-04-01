@@ -20,7 +20,9 @@ namespace TomoriBot.Core.UserProfiles
 
 		public uint LevelNumber => (uint)Math.Sqrt(Experience / 150);
 
+		public ushort Iq { get; set; }
 
+		#region Tags
 		public readonly Dictionary<ulong, string> Tags = new Dictionary<ulong, string>();
 
 		public void AddTag(ulong userId, string value)
@@ -35,6 +37,11 @@ namespace TomoriBot.Core.UserProfiles
 			UserAccounts.SaveAccounts();
 		}
 
+		public void RemoveTag(ulong userId)
+		{
+			Tags.Remove(userId);
+		}
+
 		public string GetTag(ulong userId, out bool success)
 		{
 			if (!Tags.ContainsKey(userId))
@@ -46,5 +53,6 @@ namespace TomoriBot.Core.UserProfiles
 			success = true;
 			return Tags[userId];
 		}
+		#endregion
 	}
 }

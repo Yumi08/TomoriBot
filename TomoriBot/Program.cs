@@ -13,11 +13,10 @@ namespace TomoriBot
 		private DiscordSocketClient _client;
 		private CommandHandler _handler;
 
-		static void Main(string[] args)
+		static void Main()
 		{
 			new Program().StartAsync().GetAwaiter().GetResult();
 		}
-
 
 		public async Task StartAsync()
 		{

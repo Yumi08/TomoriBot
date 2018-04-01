@@ -34,7 +34,7 @@ namespace TomoriBot
 
 		public static string GetNickname(SocketGuildUser user)
 		{
-			return user.Nickname ?? user.Username ;
+			return user.Nickname ?? user.Username;
 		}
 	}
 }

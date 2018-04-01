@@ -1,6 +1,8 @@
-﻿using Discord.Commands;
+﻿using System;
+using Discord.Commands;
 using Discord.WebSocket;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TomoriBot.Core.UserProfiles;
 using static TomoriBot.Utilities;
@@ -19,14 +21,13 @@ namespace TomoriBot.Modules
 		}
 
 		[Command("tag")]
-		public async Task Tag(SocketUser user, [Remainder]string value)
+		public async Task Tag(SocketGuildUser user, [Remainder]string value)
 		{
 			var userAccount = UserAccounts.GetAccount(Context.User);
-			var guildUser = (SocketGuildUser) user;
 
 			userAccount.AddTag(user.Id, value);
 
-			await Context.Channel.SendMessageAsync($"Tagged {GetNickname(guildUser)} with \"{value}\"!");
+			await Context.Channel.SendMessageAsync($"Tagged {GetNickname(user)} with \"{value}\"!");
 		}
 
 		[Command("tag")]
@@ -42,16 +43,43 @@ namespace TomoriBot.Modules
 				await Context.Channel.SendMessageAsync(tag);
 		}
 
+		[Command("cleartag")]
+		[Alias("removetag")]
+		public async Task ClearTag(SocketGuildUser user)
+		{
+			var userAccount = UserAccounts.GetAccount(Context.User);
+
+			userAccount.RemoveTag(user.Id);
+
+			await Context.Channel.SendMessageAsync($"Removed tag for {GetNickname(user)}");
+		}
+
 		[Command("tags")]
 		public async Task Tags()
 		{
+			var channel = Context.Message.Channel as SocketGuildChannel;
+			var guild = channel?.Guild;
+
 			var u = Context.Message.Author;
 			var userAccount = UserAccounts.GetAccount(Context.User);
 			var m = "";
 
+			foreachBegin:
 			foreach (KeyValuePair<ulong, string> entry in userAccount.Tags)
 			{
-				m += $"<@{entry.Key}> - {entry.Value}\n";
+				string userName;
+				try
+				{
+					userName = GetNickname(guild.GetUser(entry.Key));
+				}
+				catch (NullReferenceException)
+				{
+					userAccount.RemoveTag(entry.Key);
+					// SLOW SOLUTION TO PROBLEM (try to use for loop).
+					goto foreachBegin;
+				}
+
+				m += $"{userName} - {entry.Value}\n";
 			}
 
 			await Discord.UserExtensions.SendMessageAsync(u, m);
@@ -67,10 +95,15 @@ namespace TomoriBot.Modules
 
 		[Command("rps")]
 		[Alias("rockpaperscissors")]
-		public async Task Rps(SocketUser user)
+		public async Task Rps(SocketGuildUser user)
 		{
+			if (user == Context.User)
+			{
+				await Context.Channel.SendMessageAsync("You can't play with yourself! ~~that sounds so lewd~~");
+				return;
+			}
+
 			var guildContextUser = (SocketGuildUser) Context.User;
-			var guildUser = (SocketGuildUser) user;
 
 			string[] hands = {":fist:", ":hand_splayed:", ":v:"};
 			int user1Hand = Global.R.Next(3);
@@ -78,37 +111,79 @@ namespace TomoriBot.Modules
 			SocketGuildUser winner;
 
 			var m = await Context.Channel.SendMessageAsync($"Throwing... [{GetNickname(guildContextUser)} - {hands[1]}]" +
-			                                               $" vs [{GetNickname(guildUser)} - {hands[1]}]");
+			                                               $" vs [{GetNickname(user)} - {hands[1]}]");
 			await Task.Delay(2000);
 
 			if (user1Hand == user2Hand)
 			{
 				await m.ModifyAsync(msg => msg.Content = $"It's a tie!\n" +
 				                                         $"[{GetNickname(guildContextUser)} - {hands[user1Hand]}]" +
-				                                         $" vs [{GetNickname(guildUser)} - {hands[user2Hand]}]");
+				                                         $" vs [{GetNickname(user)} - {hands[user2Hand]}]");
 				return;
 			}
 
-			if (user1Hand == 0 && user2Hand == 1) winner = guildUser;
-			else if (user1Hand == 1 && user2Hand == 2) winner = guildUser;
-			else if (user1Hand == 2 && user2Hand == 0) winner = guildUser;
+			if (user1Hand == 0 && user2Hand == 1) winner = user;
+			else if (user1Hand == 1 && user2Hand == 2) winner = user;
+			else if (user1Hand == 2 && user2Hand == 0) winner = user;
 			else winner = guildContextUser;
 
 			await m.ModifyAsync(msg => msg.Content = $"{GetNickname(winner)} won!\n" +
 													 $"[{GetNickname(guildContextUser)} - {hands[user1Hand]}]" +
-			                                         $" vs [{GetNickname(guildUser)} - {hands[user2Hand]}]");
+			                                         $" vs [{GetNickname(user)} - {hands[user2Hand]}]");
 		}
 
 		[Command("iq")]
 		[Alias("intelligence")]
 		public async Task Intelligence()
 		{
-			var guildUser = (SocketGuildUser) Context.User;
+			var guildContextUser = (SocketGuildUser) Context.User;
+			var userAccount = UserAccounts.GetAccount(Context.User);
 
-			ushort iq = 0;
-			while (Global.R.Next(101) != 0) iq++;
+			if (userAccount.Iq == 0)
+			{
+				ushort iq = (ushort) Global.R.Next(1, 200);
+				userAccount.Iq = iq;
+				await Context.Channel.SendMessageAsync($"{GetNickname(guildContextUser)} has an IQ of {iq}!");
+			}
+			else await Context.Channel.SendMessageAsync($"{GetNickname(guildContextUser)} has an IQ of {userAccount.Iq}!");
+		}
 
-			await Context.Channel.SendMessageAsync($"{GetNickname(guildUser)} has an IQ of {iq}!");
+		[Command("iq")]
+		[Alias("intelligence")]
+		public async Task Intelligence(SocketGuildUser user)
+		{
+			var userAccount = UserAccounts.GetAccount(user);
+
+			if (userAccount.Iq == 0)
+			{
+				ushort iq = (ushort) Global.R.Next(1, 200);
+				userAccount.Iq = iq;
+				await Context.Channel.SendMessageAsync($"{GetNickname(user)} has an IQ of {iq}!");
+			}
+			else await Context.Channel.SendMessageAsync($"{GetNickname(user)} has an IQ of {userAccount.Iq}!");
+		}
+
+		[Command("smartest")]
+		public async Task Smartest()
+		{
+			var channel = Context.Message.Channel as SocketGuildChannel;
+			var guild = channel?.Guild;
+
+			var accList = UserAccounts.GetAccountList();
+			int maxIq = accList.Max(t => t.Iq);
+			var smartest = from a in accList
+				where a.Iq == maxIq
+				select a;
+
+			string msg = "";
+			foreach (var userAccount in smartest.ToList())
+			{
+				msg += $"- {GetNickname(guild?.GetUser(userAccount.Id))}\n";
+			}
+
+			msg += $"With an IQ of {maxIq}";
+
+			await Context.Channel.SendMessageAsync(msg);
 		}
 	}
 }

@@ -3,20 +3,21 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using TomoriBot.Core.UserProfiles;
+using static TomoriBot.Utilities;
 
 namespace TomoriBot.Modules
 {
 	public class Profile : ModuleBase<SocketCommandContext>
 	{
 		[Command("profile")]
-		public async Task _Profile(SocketUser user)
+		public async Task _Profile(SocketGuildUser user)
 		{
 			var userAccount = UserAccounts.GetAccount(user);
 
 			var embed = new EmbedBuilder()
 			{
 				Color = new Color(220, 20, 60),
-				Title = $"{user.Username}'s Stats"
+				Title = $"{GetNickname(user)}'s Stats"
 			};
 
 			embed.WithDescription($"Money: ¥{userAccount.Yen}\n" +
@@ -32,7 +33,7 @@ namespace TomoriBot.Modules
 		{
 			var user = Context.User;
 
-			await _Profile(user);
+			await _Profile((SocketGuildUser)user);
 		}
 	}
 }

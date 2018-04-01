@@ -33,6 +33,11 @@ namespace TomoriBot.Core.UserProfiles
 			return GetOrCreateAccount(user.Id);
 		}
 
+		public static List<UserAccount> GetAccountList()
+		{
+			return _accounts;
+		}
+
 		private static UserAccount GetOrCreateAccount(ulong id)
 		{
 			var result = from a in _accounts
