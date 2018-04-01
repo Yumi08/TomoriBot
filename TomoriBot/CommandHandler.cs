@@ -36,7 +36,7 @@ namespace TomoriBot
 			{
 				var result = await _service.ExecuteAsync(context, argPos);
 
-				if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
+				if (!result.IsSuccess /*&& result.Error != CommandError.UnknownCommand*/)
 				{
 					Console.WriteLine(result.ErrorReason);
 				}

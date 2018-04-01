@@ -57,9 +57,6 @@ namespace TomoriBot.Modules
 		[Command("tags")]
 		public async Task Tags()
 		{
-			var channel = Context.Message.Channel as SocketGuildChannel;
-			var guild = channel?.Guild;
-
 			var u = Context.Message.Author;
 			var userAccount = UserAccounts.GetAccount(Context.User);
 			var m = "";
@@ -70,7 +67,7 @@ namespace TomoriBot.Modules
 				string userName;
 				try
 				{
-					userName = GetNickname(guild.GetUser(entry.Key));
+					userName = GetNickname(Context.Guild.GetUser(entry.Key));
 				}
 				catch (NullReferenceException)
 				{
@@ -166,9 +163,6 @@ namespace TomoriBot.Modules
 		[Command("smartest")]
 		public async Task Smartest()
 		{
-			var channel = Context.Message.Channel as SocketGuildChannel;
-			var guild = channel?.Guild;
-
 			var accList = UserAccounts.GetAccountList();
 			int maxIq = accList.Max(t => t.Iq);
 			var smartest = from a in accList
@@ -178,7 +172,7 @@ namespace TomoriBot.Modules
 			string msg = "";
 			foreach (var userAccount in smartest.ToList())
 			{
-				msg += $"- {GetNickname(guild?.GetUser(userAccount.Id))}\n";
+				msg += $"- {GetNickname(Context.Guild.GetUser(userAccount.Id))}\n";
 			}
 
 			msg += $"With an IQ of {maxIq}";

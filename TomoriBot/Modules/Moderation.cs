@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord.Commands;
+using Discord.WebSocket;
 
 namespace TomoriBot.Modules
 {
-	class Moderation : ModuleBase<SocketCommandContext>
+	public class Moderation : ModuleBase<SocketCommandContext>
 	{
-		[Command("nick")]
-		public async Task Nickname()
+		[Command("nickname")]
+		[Alias("nick")]
+		public async Task Nickname(SocketGuildUser user, [Remainder]string newName)
 		{
-
+			await Context.Guild.GetUser(user.Id).ModifyAsync(x => { x.Nickname = newName; });
 		}
 	}
 }
