@@ -1,5 +1,6 @@
 ﻿using Discord.WebSocket;
 using TomoriBot.Core.UserProfiles;
+using static TomoriBot.Utilities;
 
 namespace TomoriBot.Core.LevelingSystem
 {
@@ -25,7 +26,7 @@ namespace TomoriBot.Core.LevelingSystem
 
 				if (oldLevel != userAccount.LevelNumber)
 				{
-					await channel.SendMessageAsync(user.Username + " just leveled up to level " + userAccount.LevelNumber + "!");
+					await channel.SendMessageAsync(GetNickname(user) + " just leveled up to level " + userAccount.LevelNumber + "!");
 				}
 			}
 
@@ -65,7 +66,7 @@ namespace TomoriBot.Core.LevelingSystem
 
 		private static async void NotifyTotalMessages(SocketGuildUser user, SocketTextChannel channel, uint totalMsgs)
 		{
-			await channel.SendMessageAsync($"{user.Username} has sent {totalMsgs} messages so far! Keep it up! <3");
+			await channel.SendMessageAsync($"{GetNickname(user)} has sent {totalMsgs} messages so far! Keep it up! <3");
 		}
 	}
 }

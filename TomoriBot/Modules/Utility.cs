@@ -16,9 +16,8 @@ namespace TomoriBot.Modules
 			                                         $"And the API latency is {Context.Client.Latency}ms.");
 		}
 
-		// TODO: FIX RESTART COMMAND (does not update code)
-		[Obsolete("Does not work properly.")]
-		//[Command("restart")]
+		// TODO: FIX RESTART COMMAND (does not update code, needs to rebuild project.)
+		[Command("restart")]
 		public async Task Restart()
 		{
 			if (await ValidateUser()) return;
