@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Reflection;
+using Discord;
 using TomoriBot.Core.LevelingSystem;
 
 namespace TomoriBot
@@ -27,8 +29,13 @@ namespace TomoriBot
 			var context = new SocketCommandContext(_client, msg);
 			if (context.User.IsBot) return;
 
+			#region Trivial
 			// Leveling up
 			Leveling.UserSentMessage((SocketGuildUser)context.User, (SocketTextChannel)context.Channel);
+
+			// Spams KannaMagik if enabled (toggled by command)
+			if (Global.SpamKanna) await msg.AddReactionAsync(context.Guild.Emotes.First(e => e.Id == 398211422217306123));
+			#endregion
 
 			var argPos = 0;
 			if (msg.HasStringPrefix(Config.bot.cmdPrefix, ref argPos)

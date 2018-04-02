@@ -23,6 +23,7 @@ namespace TomoriBot
 			if (string.IsNullOrEmpty(Config.bot.token)) return;
 			_client = new DiscordSocketClient(new DiscordSocketConfig
 			{
+
 				LogLevel = LogSeverity.Verbose
 			});
 			_client.Log += Log;
@@ -33,9 +34,10 @@ namespace TomoriBot
 			await Task.Delay(-1);
 		}
 
-		private async Task Log(LogMessage msg)
+		private Task Log(LogMessage msg)
 		{
 			Console.WriteLine(msg);
+			return Task.CompletedTask;
 		}
 	}
 }

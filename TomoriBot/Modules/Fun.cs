@@ -236,9 +236,15 @@ namespace TomoriBot.Modules
 			FishEmote randomEmote = WeightedRandomization.Choose(fishEmotes);
 
 			await Context.Channel.SendMessageAsync(randomEmote.Name);
-
 		}
 
-		
+		[Command("spamkanna")]
+		public Task SpamKanna(string input)
+		{
+			if (input == "true") Global.SpamKanna = true;
+			else Global.SpamKanna = false;
+
+			return Task.CompletedTask;
+		}
 	}
 }

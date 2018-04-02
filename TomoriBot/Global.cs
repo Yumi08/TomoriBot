@@ -9,6 +9,8 @@ namespace TomoriBot
 	{
 		public static Random R = new Random();
 
+		public static bool SpamKanna;
+
 		/// <summary>
 		/// Gets time since 1/1/2000.
 		/// </summary>
@@ -26,6 +28,7 @@ namespace TomoriBot
 			return user.Nickname ?? user.Username;
 		}
 
+		// Written by Cagatay & Gert-Jan Bos on StackOverflow
 		public static class WeightedRandomization
 		{
 			public static T Choose<T>(List<T> list) where T : IWeighted
