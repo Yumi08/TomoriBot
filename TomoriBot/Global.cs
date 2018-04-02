@@ -63,5 +63,16 @@ namespace TomoriBot
 		{
 			int Weight { get; set; }
 		}
+
+		public static string GetRemainder(string[] input, int startpoint)
+		{
+			string output = "";
+			for (int i = startpoint; i < input.Length; i++)
+			{
+				output += $"{input[i]} ";
+			}
+
+			return output;
+		}
 	}
 }
