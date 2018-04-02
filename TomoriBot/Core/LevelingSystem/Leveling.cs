@@ -1,4 +1,5 @@
-﻿using Discord.WebSocket;
+﻿using System;
+using Discord.WebSocket;
 using TomoriBot.Core.UserProfiles;
 using static TomoriBot.Global;
 
@@ -15,22 +16,22 @@ namespace TomoriBot.Core.LevelingSystem
 			OnMessageAmount(user, channel, userAccount.TotalMessages);
 
 			// Return if last message was within the last minute
-			if ((Global.GetElapsedTime().TotalMinutes - userAccount.LastMessageTime) >= 1)
+			if (Math.Abs(GetElapsedTime().TotalMinutes - userAccount.PreviousMessageTime) >= 1)
 			{
 				// Set the last leveled message time to right now
-				userAccount.LastMessageTime = Global.GetElapsedTime().TotalMinutes;
+				userAccount.PreviousMessageTime = GetElapsedTime().TotalMinutes;
 
 				uint oldLevel = userAccount.LevelNumber;
 
-				userAccount.Experience += (uint) Global.R.Next(25, 41);
+				userAccount.Experience += (uint) R.Next(25, 41);
 
 				if (oldLevel != userAccount.LevelNumber)
 				{
 					await channel.SendMessageAsync(GetNickname(user) + " just leveled up to level " + userAccount.LevelNumber + "!");
 				}
-			}
 
-			UserAccounts.SaveAccounts();
+				UserAccounts.SaveAccounts();
+			}
 		}
 
 		private static void OnMessageAmount(SocketGuildUser user, SocketTextChannel channel, uint totalMsgs)

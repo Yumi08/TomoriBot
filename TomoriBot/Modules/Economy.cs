@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using TomoriBot.Core;
@@ -101,6 +103,46 @@ namespace TomoriBot.Modules
 			await Context.Channel.SendMessageAsync($"{GetNickname((SocketGuildUser)Context.User)} unburied ¥{buried}!");
 			ds.SetPair("Buried", 0);
 		}
+
+		[Command("daily")]
+		public async Task Daily()
+		{
+			var userAccount = UserAccounts.GetAccount(Context.User);
+
+			if (Math.Abs(DateTime.Now.Day - userAccount.PreviousDailyTime.Day) < 1)
+			{
+				await Context.Channel.SendMessageAsync(
+					$"Please wait {DateTime.Now.Hour + DateTime.Today.AddDays(1).Hour} more hours!");
+				return;
+			}
+
+			if (Math.Abs(DateTime.Now.Day - userAccount.PreviousDailyTime.Day) > 1)
+			{
+				userAccount.PreviousDailyAmount = 500;
+				userAccount.DailyStreak = 0;
+			}
+
+			if (userAccount.PreviousDailyAmount == 0) userAccount.PreviousDailyAmount = 500;
+
+			uint amt = userAccount.PreviousDailyAmount += userAccount.PreviousDailyAmount / 35;
+			userAccount.Yen += amt;
+			userAccount.DailyStreak++;
+
+			await Context.Channel.SendMessageAsync($"You received ¥{amt} for the day!\n" +
+			                                       $"**Streak:** {userAccount.DailyStreak}");
+			userAccount.PreviousDailyTime = DateTime.Now;
+		}
+
+		//[Command("!clearlast")]
+		//[RequireUserPermission(GuildPermission.Administrator)]
+		//public Task CLearlast(int days)
+		//{
+		//	var userAccount = UserAccounts.GetAccount(Context.User);
+
+		//	userAccount.PreviousDailyTime = DateTime.Today.AddDays(-days);
+
+		//	return Task.CompletedTask;
+		//}
 
 
 		private async Task<bool> CheckEnoughMoney(uint amt, UserAccount userAccount)

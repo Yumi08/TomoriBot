@@ -5,20 +5,27 @@ namespace TomoriBot.Core.UserProfiles
 {
 	public class UserAccount
 	{
-		// Meta
+		// META
 		public ulong Id { get; set; }
 
-		// Utility
-		public double LastMessageTime { get; set; }
+		// UTILITY
+		public double PreviousMessageTime { get; set; }
 
-		// Stats
+		// STATS
 		public uint Yen { get; set; }
+
+		// Previous amount of money earned on $daily
+		public uint PreviousDailyAmount { get; set; }
+
+		public uint DailyStreak { get; set; }
+
+		public DateTime PreviousDailyTime { get; set; }
 
 		public uint Experience { get; set; }
 
 		public uint TotalMessages { get; set; }
 
-		public uint LevelNumber => (uint)Math.Sqrt(Experience / 150);
+		public uint LevelNumber => (uint)Math.Sqrt(Experience / 50);
 
 		public ushort Iq { get; set; }
 
