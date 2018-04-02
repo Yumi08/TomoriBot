@@ -2,7 +2,7 @@
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using static TomoriBot.Utilities;
+using static TomoriBot.Global;
 
 namespace TomoriBot.Modules
 {

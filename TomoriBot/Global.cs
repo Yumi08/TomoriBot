@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Discord.WebSocket;
 
 namespace TomoriBot
 {
@@ -18,18 +21,44 @@ namespace TomoriBot
 			return new TimeSpan(elapsedTicks);
 		}
 
-		public enum Food { Potato, Fish }
-
-		public static string FoodToString(Food food)
+		public static string GetNickname(SocketGuildUser user)
 		{
-			switch (food)
+			return user.Nickname ?? user.Username;
+		}
+
+		public static class WeightedRandomization
+		{
+			public static T Choose<T>(List<T> list) where T : IWeighted
 			{
-				case Food.Potato:
-					return "potato";
-				case Food.Fish:
-					return "fish";
-				default: return "null";
+				if (list.Count == 0)
+				{
+					return default(T);
+				}
+
+				int totalweight = list.Sum(c => c.Weight);
+				Random rand = new Random();
+				int choice = rand.Next(totalweight);
+				int sum = 0;
+
+				foreach (var obj in list)
+				{
+					for (int i = sum; i < obj.Weight + sum; i++)
+					{
+						if (i >= choice)
+						{
+							return obj;
+						}
+					}
+					sum += obj.Weight;
+				}
+
+				return list.First();
 			}
+		}
+
+		public interface IWeighted
+		{
+			int Weight { get; set; }
 		}
 	}
 }

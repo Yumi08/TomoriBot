@@ -4,8 +4,9 @@ using Discord.WebSocket;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Discord;
 using TomoriBot.Core.UserProfiles;
-using static TomoriBot.Utilities;
+using static TomoriBot.Global;
 
 namespace TomoriBot.Modules
 {
@@ -15,7 +16,7 @@ namespace TomoriBot.Modules
 		[Alias("choose")]
 		public async Task Choose([Remainder]string input)
 		{
-			var args = input.Split(' ');
+			var args = input.Split(new [] {','}, StringSplitOptions.RemoveEmptyEntries);
 
 			await Context.Channel.SendMessageAsync(args[Global.R.Next(args.Length)]);
 		}
@@ -179,5 +180,65 @@ namespace TomoriBot.Modules
 
 			await Context.Channel.SendMessageAsync(msg);
 		}
+
+		[Command("bean")]
+		[RequireUserPermission(GuildPermission.ManageRoles)]
+		public async Task Bean(SocketGuildUser user)
+		{
+			var ds = new DataStorage<string, ulong>("DataStorage.json");
+
+			var beanedRoleId = ds.GetPair("BeanedRoleID");
+			var role = Context.Guild.Roles.FirstOrDefault(x => x.Id == beanedRoleId);
+
+			await (user as IGuildUser).AddRoleAsync(role);
+
+			await Context.Channel.SendMessageAsync($"{GetNickname(user)} was beaned!");
+		}
+
+		[Command("unbean")]
+		[RequireUserPermission(GuildPermission.ManageRoles)]
+		public async Task Unbean(SocketGuildUser user)
+		{
+			var ds = new DataStorage<string, ulong>("DataStorage.json");
+
+			var beanedRoleId = ds.GetPair("BeanedRoleID");
+			var role = Context.Guild.Roles.FirstOrDefault(x => x.Id == beanedRoleId);
+
+			await (user as IGuildUser).RemoveRoleAsync(role);
+
+			await Context.Channel.SendMessageAsync($"{GetNickname(user)} was unbeaned!");
+		}
+
+		private class FishEmote : IWeighted
+		{
+			public int Weight { get; set; }
+			public string Name { get; set; }
+		}
+
+		[Command("fishy")]
+		public async Task Fishy()
+		{
+			var fishEmotes = new List<FishEmote>()
+			{
+				new FishEmote{Name = ":octopus:", Weight = 5},
+				new FishEmote{Name = ":crab:", Weight = 20},
+				new FishEmote{Name = ":fish:", Weight = 70},
+				new FishEmote{Name = ":tropical_fish:", Weight = 50},
+				new FishEmote{Name = ":blowfish:", Weight = 30},
+				new FishEmote{Name = ":shark:", Weight = 10},
+				new FishEmote{Name = ":shrimp:", Weight = 20},
+				new FishEmote{Name = ":dolphin:", Weight = 3},
+				new FishEmote{Name = ":whale:", Weight = 1},
+				new FishEmote{Name = ":squid:", Weight = 15},
+				new FishEmote{Name = ":whale2:", Weight = 1}
+			};
+
+			FishEmote randomEmote = WeightedRandomization.Choose(fishEmotes);
+
+			await Context.Channel.SendMessageAsync(randomEmote.Name);
+
+		}
+
+		
 	}
 }
