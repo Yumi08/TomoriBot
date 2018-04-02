@@ -64,15 +64,15 @@ namespace TomoriBot
 			int Weight { get; set; }
 		}
 
-		public static string GetRemainder(string[] input, int startpoint)
+		public static string[] GetRemainder(string[] input, int startpoint)
 		{
-			string output = "";
+			var outputL = new List<string>();
 			for (int i = startpoint; i < input.Length; i++)
 			{
-				output += $"{input[i]} ";
+				outputL.Add(input[i]);
 			}
 
-			return output;
+			return outputL.ToArray();
 		}
 	}
 }

@@ -59,8 +59,11 @@ namespace TomoriBot.Modules
 			else if (args.Length == 2) tagsString = $"{args[0]}+{args[1]}";
 			else tagsString = "";
 
+			var count = amt;
 			for (int i = 0; i < amt; i++)
 			{
+				count--;
+
 				var url = $"http://danbooru.donmai.us/posts/random.json?tags={tagsString}";
 
 				string json = "";
@@ -71,11 +74,12 @@ namespace TomoriBot.Modules
 
 				var dataObject = JsonConvert.DeserializeObject<dynamic>(json);
 
+				await Context.Channel.SendMessageAsync($"{count} more!");
 				await Context.Channel.SendMessageAsync($"http://danbooru.donmai.us/posts/{dataObject["id"]}");
 				await Task.Delay(2500);
 			}
 		}
-		public async Task Danbooru(ushort amt, string speed, [Remainder] string input)
+		public async Task Danbooru(ushort amt, string speed, [Remainder] string[] tags)
 		{
 			var speeds = new Dictionary<string, int>()
 			{
@@ -85,8 +89,7 @@ namespace TomoriBot.Modules
 				{"slowest", 10000}
 			};
 
-			string[] tags = input.Split(' ');
-			if (tags.Length > 2)
+			if (tags.Length > 4)
 			{
 				await Context.Channel.SendMessageAsync("Cannot use more than 2 tags!");
 				return;
@@ -99,8 +102,13 @@ namespace TomoriBot.Modules
 			else if (tags.Length == 2) tagsString = $"{tags[0]}+{tags[1]}";
 			else tagsString = "";
 
+			Console.WriteLine(tagsString);
+
+			var count = amt;
 			for (int i = 0; i < amt; i++)
 			{
+				count--;
+
 				var url = $"http://danbooru.donmai.us/posts/random.json?tags={tagsString}";
 
 				string json;
@@ -112,6 +120,7 @@ namespace TomoriBot.Modules
 				var dataObject = JsonConvert.DeserializeObject<dynamic>(json);
 
 				await Context.Channel.SendMessageAsync($"http://danbooru.donmai.us/posts/{dataObject["id"]}");
+				await Context.Channel.SendMessageAsync($"{count} more!");
 
 				var delay = speeds.ContainsKey(speed.ToLower()) ? speeds[speed.ToLower()] : 3000;
 				await Task.Delay(delay);
