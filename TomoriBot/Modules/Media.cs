@@ -52,7 +52,7 @@ namespace TomoriBot.Modules
 				return;
 			}
 
-			if (amt > 25) amt = 25;
+			if (amt > 20) amt = 20;
 
 			string tagsString;
 			if (args.Length == 1) tagsString = args[0];
@@ -83,10 +83,9 @@ namespace TomoriBot.Modules
 		{
 			var speeds = new Dictionary<string, int>()
 			{
-				{"fast", 1500},
-				{"normal", 3000},
-				{"slow", 5000},
-				{"slowest", 10000}
+				{"normal", 2000},
+				{"slow", 2500},
+				{"slowest", 5000}
 			};
 
 			if (tags.Length > 4)
@@ -95,14 +94,15 @@ namespace TomoriBot.Modules
 				return;
 			}
 
-			if (amt > 25) amt = 25;
-
 			string tagsString;
 			if (tags.Length == 1) tagsString = tags[0];
 			else if (tags.Length == 2) tagsString = $"{tags[0]}+{tags[1]}";
 			else tagsString = "";
 
-			Console.WriteLine(tagsString);
+			var delay = speeds.ContainsKey(speed.ToLower()) ? speeds[speed.ToLower()] : 3000;
+			if (amt >= 25 && delay <= 5000) amt = 25;
+			if (amt >= 20 && delay <= 2500) amt = 20;
+			if (amt >= 15 && delay <= 2000) amt = 15;
 
 			var count = amt;
 			for (int i = 0; i < amt; i++)
@@ -121,8 +121,6 @@ namespace TomoriBot.Modules
 
 				await Context.Channel.SendMessageAsync($"http://danbooru.donmai.us/posts/{dataObject["id"]}");
 				await Context.Channel.SendMessageAsync($"{count} more!");
-
-				var delay = speeds.ContainsKey(speed.ToLower()) ? speeds[speed.ToLower()] : 3000;
 				await Task.Delay(delay);
 			}
 		}
