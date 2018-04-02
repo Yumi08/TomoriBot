@@ -4,7 +4,6 @@ using Discord.WebSocket;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Discord;
 using TomoriBot.Core.UserProfiles;
 using static TomoriBot.Global;
 
@@ -18,7 +17,11 @@ namespace TomoriBot.Modules
 		{
 			var args = input.Split(new [] {','}, StringSplitOptions.RemoveEmptyEntries);
 
-			await Context.Channel.SendMessageAsync(args[Global.R.Next(args.Length)]);
+			var m = await Context.Channel.SendMessageAsync("Hmm.....");
+
+			await Task.Delay(1000);
+
+			await m.ModifyAsync(x => x.Content = args[R.Next(args.Length)]);
 		}
 
 		[Command("tag")]

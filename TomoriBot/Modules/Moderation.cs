@@ -51,7 +51,7 @@ namespace TomoriBot.Modules
 		[RequireUserPermission(GuildPermission.ManageRoles)]
 		public async Task Bean(SocketGuildUser user)
 		{
-			var ds = new DataStorage<string, ulong>("DataStorage.json");
+			var ds = new DataStorage<string, ulong>("Storage/IDStorage.json");
 
 			var beanedRoleId = ds.GetPair("BeanedRoleID");
 			var role = Context.Guild.Roles.FirstOrDefault(x => x.Id == beanedRoleId);
@@ -65,7 +65,7 @@ namespace TomoriBot.Modules
 		[RequireUserPermission(GuildPermission.ManageRoles)]
 		public async Task Unbean(SocketGuildUser user)
 		{
-			var ds = new DataStorage<string, ulong>("DataStorage.json");
+			var ds = new DataStorage<string, ulong>("Storage/IDStorage.json");
 
 			var beanedRoleId = ds.GetPair("BeanedRoleID");
 			var role = Context.Guild.Roles.FirstOrDefault(x => x.Id == beanedRoleId);

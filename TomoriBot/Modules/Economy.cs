@@ -73,7 +73,7 @@ namespace TomoriBot.Modules
 
 			if (await CheckEnoughMoney(amt, userAccount)) return;
 
-			var ds = new DataStorage<string, uint>("DataStorage.json");
+			var ds = new DataStorage<string, uint>("Storage/DataStorage.json");
 			ds.SetPair("Buried", amt + ds.GetOrCreatePair("Buried"));
 
 			userAccount.Yen -= amt;
@@ -90,7 +90,7 @@ namespace TomoriBot.Modules
 		{
 			var userAccount = UserAccounts.GetAccount(Context.User);
 
-			var ds = new DataStorage<string,uint>("DataStorage.json");
+			var ds = new DataStorage<string,uint>("Storage/DataStorage.json");
 			var buried = ds.GetOrCreatePair("Buried");
 
 			if (buried == 0)
@@ -104,15 +104,16 @@ namespace TomoriBot.Modules
 			ds.SetPair("Buried", 0);
 		}
 
+		// TIMING SYSTEM DOESN'T WORK, HOUR GOES UP INSTEAD OF DOWN.
 		[Command("daily")]
 		public async Task Daily()
 		{
 			var userAccount = UserAccounts.GetAccount(Context.User);
 
-			if (Math.Abs(DateTime.Now.Day - userAccount.PreviousDailyTime.Day) < 1)
+			if (Math.Abs(DateTime.Today.Day - userAccount.PreviousDailyTime.Day) < 1)
 			{
 				await Context.Channel.SendMessageAsync(
-					$"Please wait {DateTime.Now.Hour + DateTime.Today.AddDays(1).Hour} more hours!");
+					$"Please wait {Math.Abs(24 - DateTime.Now.Hour)} more hours!");
 				return;
 			}
 
@@ -133,16 +134,16 @@ namespace TomoriBot.Modules
 			userAccount.PreviousDailyTime = DateTime.Now;
 		}
 
-		//[Command("!clearlast")]
-		//[RequireUserPermission(GuildPermission.Administrator)]
-		//public Task CLearlast(int days)
-		//{
-		//	var userAccount = UserAccounts.GetAccount(Context.User);
+		[Command("!clearlast")]
+		[RequireUserPermission(GuildPermission.Administrator)]
+		public Task CLearlast(int days)
+		{
+			var userAccount = UserAccounts.GetAccount(Context.User);
 
-		//	userAccount.PreviousDailyTime = DateTime.Today.AddDays(-days);
+			userAccount.PreviousDailyTime = DateTime.Today.AddDays(-days);
 
-		//	return Task.CompletedTask;
-		//}
+			return Task.CompletedTask;
+		}
 
 
 		private async Task<bool> CheckEnoughMoney(uint amt, UserAccount userAccount)
