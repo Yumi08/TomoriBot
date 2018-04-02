@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -8,8 +9,7 @@ namespace TomoriBot.Modules
 {
 	public class Moderation : ModuleBase<SocketCommandContext>
 	{
-		[Command("nickname")]
-		[Alias("nick")]
+		[Command("nick")]
 		[RequireUserPermission(GuildPermission.ManageNicknames)]
 		public async Task Nickname(SocketGuildUser user, [Remainder]string newName)
 		{
@@ -44,6 +44,35 @@ namespace TomoriBot.Modules
 		{
 			await Context.Guild.AddBanAsync(user, reason: reason);
 			await Context.Channel.SendMessageAsync($"{GetNickname(user)} ({user.Id}) has been banned!");
+		}
+
+
+		[Command("bean")]
+		[RequireUserPermission(GuildPermission.ManageRoles)]
+		public async Task Bean(SocketGuildUser user)
+		{
+			var ds = new DataStorage<string, ulong>("DataStorage.json");
+
+			var beanedRoleId = ds.GetPair("BeanedRoleID");
+			var role = Context.Guild.Roles.FirstOrDefault(x => x.Id == beanedRoleId);
+
+			await (user as IGuildUser).AddRoleAsync(role);
+
+			await Context.Channel.SendMessageAsync($"{GetNickname(user)} was beaned!");
+		}
+
+		[Command("unbean")]
+		[RequireUserPermission(GuildPermission.ManageRoles)]
+		public async Task Unbean(SocketGuildUser user)
+		{
+			var ds = new DataStorage<string, ulong>("DataStorage.json");
+
+			var beanedRoleId = ds.GetPair("BeanedRoleID");
+			var role = Context.Guild.Roles.FirstOrDefault(x => x.Id == beanedRoleId);
+
+			await (user as IGuildUser).RemoveRoleAsync(role);
+
+			await Context.Channel.SendMessageAsync($"{GetNickname(user)} was unbeaned!");
 		}
 	}
 }

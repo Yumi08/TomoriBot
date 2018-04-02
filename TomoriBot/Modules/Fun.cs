@@ -181,34 +181,6 @@ namespace TomoriBot.Modules
 			await Context.Channel.SendMessageAsync(msg);
 		}
 
-		[Command("bean")]
-		[RequireUserPermission(GuildPermission.ManageRoles)]
-		public async Task Bean(SocketGuildUser user)
-		{
-			var ds = new DataStorage<string, ulong>("DataStorage.json");
-
-			var beanedRoleId = ds.GetPair("BeanedRoleID");
-			var role = Context.Guild.Roles.FirstOrDefault(x => x.Id == beanedRoleId);
-
-			await (user as IGuildUser).AddRoleAsync(role);
-
-			await Context.Channel.SendMessageAsync($"{GetNickname(user)} was beaned!");
-		}
-
-		[Command("unbean")]
-		[RequireUserPermission(GuildPermission.ManageRoles)]
-		public async Task Unbean(SocketGuildUser user)
-		{
-			var ds = new DataStorage<string, ulong>("DataStorage.json");
-
-			var beanedRoleId = ds.GetPair("BeanedRoleID");
-			var role = Context.Guild.Roles.FirstOrDefault(x => x.Id == beanedRoleId);
-
-			await (user as IGuildUser).RemoveRoleAsync(role);
-
-			await Context.Channel.SendMessageAsync($"{GetNickname(user)} was unbeaned!");
-		}
-
 		private class FishEmote : IWeighted
 		{
 			public int Weight { get; set; }

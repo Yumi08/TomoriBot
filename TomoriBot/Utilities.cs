@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.IO;
-using Discord.Commands;
-using Discord.WebSocket;
 
 namespace TomoriBot
 {
@@ -30,6 +28,11 @@ namespace TomoriBot
 				return String.Format(_alerts[key], parameter);
 			}
 			return "";
+		}
+
+		public static string GetCommandHelp()
+		{
+			return File.ReadAllText("SystemLang/commandHelp.txt");
 		}
 	}
 }

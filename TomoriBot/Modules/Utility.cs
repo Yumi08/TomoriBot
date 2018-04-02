@@ -29,6 +29,27 @@ namespace TomoriBot.Modules
 			Environment.Exit(0);
 		}
 
+		[Command("help")]
+		public async Task Help()
+		{
+			var u = Context.Message.Author;
+			await Discord.UserExtensions.SendMessageAsync(u, Utilities.GetCommandHelp());
+		}
+
+		[Command("help")]
+		public async Task Help(string command)
+		{
+			var msg = Utilities.GetAlert($"Help_{command.ToLower()}");
+
+			if (msg == "ERR: KEY NOT FOUND.")
+			{
+				await Context.Channel.SendMessageAsync("No such command found!");
+				return;
+			}
+
+			await Context.Channel.SendMessageAsync(msg);
+		}
+
 
 		private async Task<bool> ValidateUser()
 		{

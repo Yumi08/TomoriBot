@@ -33,7 +33,7 @@ namespace TomoriBot
 			// Leveling up
 			Leveling.UserSentMessage((SocketGuildUser)context.User, (SocketTextChannel)context.Channel);
 
-			// Spams KannaMagik if enabled (toggled by command)
+			// Spams KannaMagik reaction if enabled (toggled by command)
 			if (Global.SpamKanna) await msg.AddReactionAsync(context.Guild.Emotes.First(e => e.Id == 398211422217306123));
 			#endregion
 
