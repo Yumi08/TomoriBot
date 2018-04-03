@@ -35,11 +35,5 @@ namespace TomoriBot.Modules
 
 			await _Profile((SocketGuildUser)user);
 		}
-
-		[Command("register")]
-		public async Task Register()
-		{
-
-		}
 	}
 }

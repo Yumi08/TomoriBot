@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Discord.Commands;
@@ -12,7 +13,7 @@ namespace TomoriBot.Modules
 		public async Task Danbooru([Remainder]string input)
 		{
 
-			string[] tags = input.Split(' ');
+			string[] tags = input.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
 			if (tags.Length > 2)
 			{
 				await Context.Channel.SendMessageAsync("Cannot use more than 2 tags!");
@@ -40,7 +41,7 @@ namespace TomoriBot.Modules
 		[Command("danbooruf")]
 		public async Task Danbooru(ushort amt, [Remainder] string input)
 		{
-			string[] args = input.Split(' ');
+			string[] args = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 			if (args[0].ToLower().Contains("speed:"))
 			{
 				args[0] = args[0].Replace("speed:", "");
