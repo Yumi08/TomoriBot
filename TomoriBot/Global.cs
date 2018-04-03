@@ -66,13 +66,13 @@ namespace TomoriBot
 
 		public static string[] GetRemainder(string[] input, int startpoint)
 		{
-			var outputL = new List<string>();
+			var outputList = new List<string>();
 			for (int i = startpoint; i < input.Length; i++)
 			{
-				outputL.Add(input[i]);
+				outputList.Add(input[i]);
 			}
 
-			return outputL.ToArray();
+			return outputList.ToArray();
 		}
 	}
 }

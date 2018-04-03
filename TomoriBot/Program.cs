@@ -21,11 +21,7 @@ namespace TomoriBot
 		public async Task StartAsync()
 		{
 			if (string.IsNullOrEmpty(Config.bot.token)) return;
-			_client = new DiscordSocketClient(new DiscordSocketConfig
-			{
-
-				LogLevel = LogSeverity.Verbose
-			});
+			_client = new DiscordSocketClient(new DiscordSocketConfig {LogLevel = LogSeverity.Verbose});
 			_client.Log += Log;
 			await _client.LoginAsync(TokenType.Bot, Config.bot.token);
 			await _client.StartAsync();

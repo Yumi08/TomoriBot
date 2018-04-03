@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Discord.Commands;
@@ -12,6 +11,7 @@ namespace TomoriBot.Modules
 		[Command("danbooru")]
 		public async Task Danbooru([Remainder]string input)
 		{
+
 			string[] tags = input.Split(' ');
 			if (tags.Length > 2)
 			{
@@ -45,6 +45,7 @@ namespace TomoriBot.Modules
 			{
 				args[0] = args[0].Replace("speed:", "");
 				await Danbooru(amt, args[0], Global.GetRemainder(args, 1));
+				return;
 			}
 			if (args.Length > 2)
 			{
@@ -79,6 +80,7 @@ namespace TomoriBot.Modules
 				await Task.Delay(2500);
 			}
 		}
+
 		public async Task Danbooru(ushort amt, string speed, [Remainder] string[] tags)
 		{
 			var speeds = new Dictionary<string, int>()
