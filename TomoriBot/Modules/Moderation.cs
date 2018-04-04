@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -44,6 +45,51 @@ namespace TomoriBot.Modules
 		{
 			await Context.Guild.AddBanAsync(user, reason: reason);
 			await Context.Channel.SendMessageAsync($"{GetNickname(user)} ({user.Id}) has been banned!");
+		}
+
+		[Command("mute")]
+		[RequireUserPermission(ChannelPermission.ManagePermissions)]
+		public async Task Mute(SocketGuildUser user)
+		{
+			await InitializeMute();
+
+			var ds = new DataStorage<string, ulong>("Storage/IDStorage.json");
+			var mutedRole = Context.Guild.GetRole(ds.GetPair("MutedRole"));
+
+			new SocketCommandContext(CommandHandler.Client, Context.Message);
+			await user.AddRoleAsync(Context.Guild.Roles.First(r => r.Id == mutedRole?.Id));
+		}
+		private async Task InitializeMute()
+		{
+			var ds = new DataStorage<string, ulong>("Storage/IDStorage.json");
+
+			var roles = from r in Context.Guild.Roles
+				where r.Name == "Muted"
+				select r;
+
+			IRole mutedRole;
+			OverwritePermissions perms = new OverwritePermissions(sendMessages: PermValue.Deny, readMessages: PermValue.Allow);
+			if (!roles.Any())
+			{
+				var mutedPerms = new GuildPermissions();
+				mutedPerms.Modify(sendMessages: false);
+				mutedRole = await Context.Guild.CreateRoleAsync("Muted", mutedPerms, Color.LightGrey);
+				ds.SetPair("MutedRole", mutedRole.Id);
+			}
+			else mutedRole = Context.Guild.GetRole(ds.GetPair("MutedRole"));
+
+			foreach (var channel in Context.Guild.TextChannels)
+			{
+				if (channel == null) continue;
+
+				foreach (var overwrite in channel.PermissionOverwrites)
+				{
+					if (overwrite.TargetId == mutedRole?.Id) goto next;
+				}
+				await channel.AddPermissionOverwriteAsync(mutedRole, perms);
+				next:;
+				Console.WriteLine("End of InitializeMute()");
+			}
 		}
 
 
