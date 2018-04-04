@@ -1,12 +1,23 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Discord;
 using Discord.Commands;
 
 namespace TomoriBot.Modules
 {
 	public class Utility : ModuleBase<SocketCommandContext>
 	{
-		// TODO: FIX (sometomes outputs negative values around 800)
+		[Command("initialize")]
+		[RequireUserPermission(GuildPermission.Administrator)]
+		public async Task Initialize()
+		{
+			await InitializeMute();
+
+			await Context.Channel.SendMessageAsync("Initialized all commands!");
+		}
+
+		// TODO: FIX (rarely outputs negative values around 800)
 		//[Command("ping")]
 		public async Task Ping()
 		{
@@ -50,7 +61,38 @@ namespace TomoriBot.Modules
 			await Context.Channel.SendMessageAsync(msg);
 		}
 
+		private async Task InitializeMute()
+		{
+			var ds = new DataStorage<string, ulong>("Storage/IDStorage.json");
 
+			var roles = from r in Context.Guild.Roles
+				where r.Name == "Muted"
+				select r;
+
+			IRole mutedRole;
+			OverwritePermissions perms = new OverwritePermissions(sendMessages: PermValue.Deny, readMessages: PermValue.Allow);
+			if (!roles.Any())
+			{
+				var mutedPerms = new GuildPermissions();
+				mutedPerms.Modify(sendMessages: false);
+				mutedRole = await Context.Guild.CreateRoleAsync("Muted", mutedPerms, Color.LightGrey);
+				ds.SetPair("MutedRole", mutedRole.Id);
+			}
+			else mutedRole = Context.Guild.GetRole(ds.GetPair("MutedRole"));
+
+			foreach (var channel in Context.Guild.TextChannels)
+			{
+				if (channel == null) continue;
+
+				foreach (var overwrite in channel.PermissionOverwrites)
+				{
+					if (overwrite.TargetId == mutedRole?.Id) goto next;
+				}
+				await channel.AddPermissionOverwriteAsync(mutedRole, perms);
+				next:;
+				Console.WriteLine("End of InitializeMute()");
+			}
+		}
 		private async Task<bool> ValidateUser()
 		{
 			if (Context.User.Id != 218429853144186883)

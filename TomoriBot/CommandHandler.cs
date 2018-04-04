@@ -12,22 +12,22 @@ namespace TomoriBot
 	{
 		public event EventHandler<MessageReceievedEventArgs> MessageReceived; 
 
-		public static DiscordSocketClient Client;
+		private DiscordSocketClient _client;
 		private CommandService _service;
 
 		public async Task InitializeAsync(DiscordSocketClient client)
 		{
-			Client = client;
+			_client = client;
 			_service = new CommandService();
 			await _service.AddModulesAsync(Assembly.GetEntryAssembly());
-			Client.MessageReceived += HandleCommandAsync;
+			_client.MessageReceived += HandleCommandAsync;
 		}
 
 		private async Task HandleCommandAsync(SocketMessage s)
 		{
 			var msg = (SocketUserMessage) s;
 			if (msg == null) return;
-			var context = new SocketCommandContext(Client, msg);
+			var context = new SocketCommandContext(_client, msg);
 			if (context.User.IsBot) return;
 
 			if (context.IsPrivate) goto TrivialEnd;
@@ -49,7 +49,7 @@ namespace TomoriBot
 			}
 
 				if ((msg.HasStringPrefix(Config.bot.cmdPrefix, ref argPos)
-			|| msg.HasMentionPrefix(Client.CurrentUser, ref argPos)) && !context.IsPrivate)
+			|| msg.HasMentionPrefix(_client.CurrentUser, ref argPos)) && !context.IsPrivate)
 			{
 				var result = await _service.ExecuteAsync(context, argPos);
 
