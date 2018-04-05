@@ -51,10 +51,43 @@ namespace TomoriBot.Modules
 		[RequireUserPermission(ChannelPermission.ManagePermissions)]
 		public async Task Mute(SocketGuildUser user)
 		{
-			var ds = new DataStorage<string, ulong>("Storage/IDStorage.json");
-			var mutedRole = Context.Guild.GetRole(ds.GetPair("MutedRole"));
+			var mutedRole = InitializeMute();
 
-			await user.AddRoleAsync(Context.Guild.Roles.First(r => r.Id == mutedRole?.Id));
+			// .Result can cause deadlock
+			await user.AddRoleAsync(mutedRole.Result);
+		}
+		private async Task<IRole> InitializeMute()
+		{
+			var ds = new DataStorage<string, ulong>("Storage/IDStorage.json");
+
+			var roles = from r in Context.Guild.Roles
+				where r.Name == "Muted"
+				select r;
+
+			IRole mutedRole;
+			OverwritePermissions perms = new OverwritePermissions(sendMessages: PermValue.Deny, readMessages: PermValue.Allow);
+			if (!roles.Any())
+			{
+				var mutedPerms = new GuildPermissions();
+				mutedPerms.Modify(sendMessages: false);
+				mutedRole = await Context.Guild.CreateRoleAsync("Muted", mutedPerms, Color.LightGrey);
+				ds.SetPair("MutedRole", mutedRole.Id);
+			}
+			else mutedRole = Context.Guild.GetRole(ds.GetPair("MutedRole"));
+
+			foreach (var channel in Context.Guild.TextChannels)
+			{
+				if (channel == null) continue;
+
+				foreach (var overwrite in channel.PermissionOverwrites)
+				{
+					if (overwrite.TargetId == mutedRole?.Id) goto next;
+				}
+				await channel.AddPermissionOverwriteAsync(mutedRole, perms);
+				next:;
+			}
+
+			return mutedRole;
 		}
 		[Command("unmute")]
 		[RequireUserPermission(ChannelPermission.ManagePermissions)]

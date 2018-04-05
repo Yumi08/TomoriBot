@@ -5,6 +5,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Reflection;
 using TomoriBot.Core.LevelingSystem;
+using TomoriBot.Modules;
 
 namespace TomoriBot
 {
