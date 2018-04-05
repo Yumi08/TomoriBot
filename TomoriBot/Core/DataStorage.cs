@@ -5,6 +5,9 @@ using TomoriBot.Core.UserProfiles;
 
 namespace TomoriBot.Core
 {
+	/// <summary>
+	/// Static class for handling user accounts' json data
+	/// </summary>
 	public static class DataStorage
 	{
 		public static void SaveUserAccounts(IEnumerable<UserAccount> accounts, string filePath)
@@ -20,6 +23,11 @@ namespace TomoriBot.Core
 			return JsonConvert.DeserializeObject<List<UserAccount>>(json);
 		}
 
+		/// <summary>
+		/// Check if a user account's save exists
+		/// </summary>
+		/// <param name="filePath"></param>
+		/// <returns></returns>
 		public static bool SaveExists(string filePath)
 		{
 			return File.Exists(filePath);
