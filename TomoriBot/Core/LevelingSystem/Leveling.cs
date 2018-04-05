@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Discord.WebSocket;
 using TomoriBot.Core.UserProfiles;
 using static TomoriBot.Global;
@@ -7,6 +8,8 @@ namespace TomoriBot.Core.LevelingSystem
 {
 	internal static class Leveling
 	{
+		private static int[] _messageMilestones = new[] {100, 500, 1000, 5000, 10000, 25000, 50000, 100000};
+
 		internal static async void UserSentMessage(SocketGuildUser user, SocketTextChannel channel)
 		{
 			var userAccount = UserAccounts.GetAccount(user);
@@ -36,36 +39,14 @@ namespace TomoriBot.Core.LevelingSystem
 
 		private static void OnMessageAmount(SocketGuildUser user, SocketTextChannel channel, uint totalMsgs)
 		{
-			switch (totalMsgs)
+			for (int i = 0; i < _messageMilestones.Length; i++)
 			{
-				case 100:
-					NotifyTotalMessages(user, channel, totalMsgs);
-					break;
-				case 500:
-					NotifyTotalMessages(user, channel, totalMsgs);
-					break;
-				case 1000:
-					NotifyTotalMessages(user, channel, totalMsgs);
-					break;
-				case 5000:
-					NotifyTotalMessages(user, channel, totalMsgs);
-					break;
-				case 10000:
-					NotifyTotalMessages(user, channel, totalMsgs);
-					break;
-				case 25000:
-					NotifyTotalMessages(user, channel, totalMsgs);
-					break;
-				case 50000:
-					NotifyTotalMessages(user, channel, totalMsgs);
-					break;
-				case 100000:
-					NotifyTotalMessages(user, channel, totalMsgs);
-					break;
+				if (totalMsgs ==_messageMilestones[i])
+					NotifyTotalMessages(user, channel, _messageMilestones[i]);
 			}
 		}
 
-		private static async void NotifyTotalMessages(SocketGuildUser user, SocketTextChannel channel, uint totalMsgs)
+		private static async void NotifyTotalMessages(SocketGuildUser user, SocketTextChannel channel, int totalMsgs)
 		{
 			await channel.SendMessageAsync($"{GetNickname(user)} has sent {totalMsgs} messages so far! Keep it up! <3");
 		}

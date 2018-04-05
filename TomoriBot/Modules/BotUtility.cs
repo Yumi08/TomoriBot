@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.Commands;
+using TomoriBot.Core.UserProfiles;
 
 namespace TomoriBot.Modules
 {
+	/// <summary>
+	/// Class containing commands for managing the bot
+	/// </summary>
 	public class BotUtility : ModuleBase<SocketCommandContext>
 	{
 		// TODO: FIX (rarely outputs negative values around 800)
@@ -20,7 +24,7 @@ namespace TomoriBot.Modules
 		[Command("restart")]
 		public async Task Restart()
 		{
-			if (await ValidateUser()) return;
+			if (await Global.ValidateUser(Context)) return;
 
 			await Context.Channel.SendMessageAsync("Restarting!");
 
@@ -33,13 +37,13 @@ namespace TomoriBot.Modules
 		public async Task Help()
 		{
 			var u = Context.Message.Author;
-			await Discord.UserExtensions.SendMessageAsync(u, Utilities.GetCommandHelp());
+			await Discord.UserExtensions.SendMessageAsync(u, FileUtils.GetCommandHelp());
 		}
 
 		[Command("help")]
 		public async Task Help(string command)
 		{
-			var msg = Utilities.GetAlert($"Help_{command.ToLower()}");
+			var msg = FileUtils.GetAlert($"Help_{command.ToLower()}");
 
 			if (msg == "ERR: KEY NOT FOUND.")
 			{
@@ -49,15 +53,25 @@ namespace TomoriBot.Modules
 
 			await Context.Channel.SendMessageAsync(msg);
 		}
-		private async Task<bool> ValidateUser()
-		{
-			if (Context.User.Id != 218429853144186883)
-			{
-				await Context.Channel.SendMessageAsync("Wat u think ur doin <:MiyanoDead:407275770151436289>");
-				return true;
-			}
 
-			return false;
+		[Command("setgame")]
+		public async Task SetGame([Remainder]string input)
+		{
+			if (await Global.ValidateUser(Context)) return;
+
+			switch (input)
+			{
+				case "USERS":
+					int userCount = UserAccounts.UserAccountCount();
+					await Context.Client.SetGameAsync($"{userCount} users");
+					await Context.Channel.SendMessageAsync("I set my game to the current amount of users!");
+					break;
+
+				default:
+					await Context.Client.SetGameAsync(input);
+					await Context.Channel.SendMessageAsync($"My game has been set to \"{input}\".");
+					break;
+			}
 		}
 	}
 }

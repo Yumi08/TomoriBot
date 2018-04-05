@@ -23,6 +23,11 @@ namespace TomoriBot.Core.UserProfiles
 			}
 		}
 
+		public static int UserAccountCount()
+		{
+			return _accounts.Count;
+		}
+
 		public static void SaveAccounts()
 		{
 			DataStorage.SaveUserAccounts(_accounts, _accountsFile);

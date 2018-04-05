@@ -5,11 +5,14 @@ using System.IO;
 
 namespace TomoriBot
 {
-	class Utilities
+	/// <summary>
+	/// Class for getting texts contained within files
+	/// </summary>
+	class FileUtils
 	{
 		private static Dictionary<string, string> _alerts;
 
-		static Utilities()
+		static FileUtils()
 		{
 			string json = File.ReadAllText("SystemLang/alerts.json");
 			var data = JsonConvert.DeserializeObject<dynamic>(json);

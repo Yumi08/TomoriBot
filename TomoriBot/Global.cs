@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Discord.Commands;
 using Discord.WebSocket;
 
 namespace TomoriBot
 {
-	internal static class Global
+	/// <summary>
+	/// Class for globally stored static methods, objects, etc.
+	/// </summary>
+	public static class Global
 	{
 		public static Random R = new Random();
 
@@ -73,6 +78,24 @@ namespace TomoriBot
 			}
 
 			return outputList.ToArray();
+		}
+
+		/// <summary>
+		/// Returns true if the current user isn't the bot's owner
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
+		public static async Task<bool> ValidateUser(SocketCommandContext context)
+		{
+			var ds = new DataStorage<string, ulong>("Storage/IDStorage.json");
+
+			if (context.User.Id != ds.GetPair("BotOwner"))
+			{
+				await context.Channel.SendMessageAsync("Wat u think ur doin <:MiyanoDead:407275770151436289>");
+				return true;
+			}
+
+			return false;
 		}
 	}
 }
