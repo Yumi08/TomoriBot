@@ -65,7 +65,7 @@ namespace TomoriBot.Modules
 				select r;
 
 			IRole mutedRole;
-			OverwritePermissions perms = new OverwritePermissions(sendMessages: PermValue.Deny, readMessages: PermValue.Allow);
+			OverwritePermissions perms = new OverwritePermissions(sendMessages: PermValue.Deny, readMessages: PermValue.Allow, addReactions: PermValue.Deny);
 			if (!roles.Any())
 			{
 				var mutedPerms = new GuildPermissions();
@@ -77,11 +77,11 @@ namespace TomoriBot.Modules
 
 			foreach (var channel in Context.Guild.TextChannels)
 			{
-				if (channel == null) continue;
-
 				foreach (var overwrite in channel.PermissionOverwrites)
 				{
-					if (overwrite.TargetId == mutedRole?.Id) goto next;
+					// If the muted role already exists and has proper perms in the channel permissions, skip it
+					if (overwrite.TargetId == mutedRole?.Id
+					    && overwrite.Permissions.Equals(perms)) goto next;
 				}
 				await channel.AddPermissionOverwriteAsync(mutedRole, perms);
 				next:;
