@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.Commands;
 using TomoriBot.Core.UserProfiles;
@@ -54,24 +55,75 @@ namespace TomoriBot.Modules
 			await Context.Channel.SendMessageAsync(msg);
 		}
 
+		/// <summary>
+		/// Sets the bot's current game it's playing
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
 		[Command("setgame")]
 		public async Task SetGame([Remainder]string input)
 		{
 			if (await Global.ValidateUser(Context)) return;
 
+			string gameName;
 			switch (input)
 			{
-				case "USERS":
-					int userCount = UserAccounts.UserAccountCount();
-					await Context.Client.SetGameAsync($"{userCount} users");
-					await Context.Channel.SendMessageAsync("I set my game to the current amount of users!");
+				/* case "%RESET%":
+					// Doesn't work.
+					await Context.Client.SetGameAsync(null);
+					await Context.Channel.SendMessageAsync("Reset game!");
+					break; */
+
+				case "%WITHME%":
+				{
+					var ds = new DataStorage<string, ulong>("Storage/IDStorage.json");
+					var _ownerName = Context.Guild.GetUser(ds.GetPair("BotOwner")).Username;
+					var ownerName = Regex.Replace(_ownerName, @"\p{Cs}", "");
+					gameName = $"with {ownerName}";
+					await Context.Client.SetGameAsync(gameName);
+					await Context.Channel.SendMessageAsync($"I set my game to \"{gameName}\"!");
 					break;
+				}
+					
+
+				case "%MIRROR%":
+				{
+					var ds = new DataStorage<string, ulong>("Storage/IDStorage.json");
+					gameName = Context.Guild.GetUser(ds.GetPair("BotOwner")).Game?.Name;
+					await Context.Client.SetGameAsync(gameName);
+					await Context.Channel.SendMessageAsync($"I set my game to \"{gameName}\"!");
+					break;
+				}
+
+				case "%USERS%":
+				{
+					int userCount = UserAccounts.UserAccountCount();
+					gameName = $"{userCount} users";
+					await Context.Client.SetGameAsync(gameName);
+					await Context.Channel.SendMessageAsync($"I set my game to \"{gameName}\"!");
+					break;
+				}
 
 				default:
+				{
+					gameName = input;
 					await Context.Client.SetGameAsync(input);
-					await Context.Channel.SendMessageAsync($"My game has been set to \"{input}\".");
+					await Context.Channel.SendMessageAsync($"I set my game to \"{input}\".");
 					break;
+				}
 			}
+
+			Console.WriteLine($"Game set to \"{gameName}\".");
+		}
+
+		[Command("logout")]
+		public async Task LogOut()
+		{
+			if (await Global.ValidateUser(Context)) return;
+
+			await Context.Channel.SendMessageAsync("Logging out!");
+			Console.WriteLine("Logging out!");
+			Environment.Exit(0);
 		}
 	}
 }
