@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Discord;
 using Newtonsoft.Json;
 using TomoriBot.Core.UserProfiles;
 using static TomoriBot.Global;
@@ -17,7 +18,7 @@ namespace TomoriBot.Modules
 		[Alias("choose")]
 		public async Task Choose([Remainder]string input)
 		{
-			if (!CheckFunModule(Context).Result) return;
+			if (!CheckFunEnabled(Context).Result) return;
 
 			var args = input.Split(new [] {','}, StringSplitOptions.RemoveEmptyEntries);
 
@@ -31,7 +32,7 @@ namespace TomoriBot.Modules
 		[Command("tag")]
 		public async Task Tag(SocketGuildUser user, [Remainder]string value)
 		{
-			if (!CheckFunModule(Context).Result) return;
+			if (!CheckFunEnabled(Context).Result) return;
 
 			var userAccount = UserAccounts.GetAccount(Context.User);
 
@@ -43,7 +44,7 @@ namespace TomoriBot.Modules
 		[Command("tag")]
 		public async Task Tag(SocketUser user)
 		{
-			if (!CheckFunModule(Context).Result) return;
+			if (!CheckFunEnabled(Context).Result) return;
 
 			var userAccount = UserAccounts.GetAccount(Context.User);
 
@@ -59,7 +60,7 @@ namespace TomoriBot.Modules
 		[Alias("removetag")]
 		public async Task ClearTag(SocketGuildUser user)
 		{
-			if (!CheckFunModule(Context).Result) return;
+			if (!CheckFunEnabled(Context).Result) return;
 
 			var userAccount = UserAccounts.GetAccount(Context.User);
 
@@ -71,7 +72,7 @@ namespace TomoriBot.Modules
 		[Command("tags")]
 		public async Task Tags()
 		{
-			if (!CheckFunModule(Context).Result) return;
+			if (!CheckFunEnabled(Context).Result) return;
 
 			var u = Context.Message.Author;
 			var userAccount = UserAccounts.GetAccount(Context.User);
@@ -101,7 +102,7 @@ namespace TomoriBot.Modules
 		[Command("x")]
 		public async Task X([Remainder] string input)
 		{
-			if (!CheckFunModule(Context).Result) return;
+			if (!CheckFunEnabled(Context).Result) return;
 
 			var guildContextUser = (SocketGuildUser) Context.User;
 
@@ -112,7 +113,7 @@ namespace TomoriBot.Modules
 		[Alias("rockpaperscissors")]
 		public async Task Rps(SocketGuildUser user)
 		{
-			if (!CheckFunModule(Context).Result) return;
+			if (!CheckFunEnabled(Context).Result) return;
 
 			if (user == Context.User)
 			{
@@ -153,7 +154,7 @@ namespace TomoriBot.Modules
 		[Alias("intelligence")]
 		public async Task Intelligence()
 		{
-			if (!CheckFunModule(Context).Result) return;
+			if (!CheckFunEnabled(Context).Result) return;
 
 			var guildContextUser = (SocketGuildUser) Context.User;
 			var userAccount = UserAccounts.GetAccount(Context.User);
@@ -171,7 +172,7 @@ namespace TomoriBot.Modules
 		[Alias("intelligence")]
 		public async Task Intelligence(SocketGuildUser user)
 		{
-			if (!CheckFunModule(Context).Result) return;
+			if (!CheckFunEnabled(Context).Result) return;
 
 			var userAccount = UserAccounts.GetAccount(user);
 
@@ -187,56 +188,50 @@ namespace TomoriBot.Modules
 		[Command("smartest")]
 		public async Task Smartest()
 		{
-			if (!CheckFunModule(Context).Result) return;
+			if (!CheckFunEnabled(Context).Result) return;
 
 			var accList = UserAccounts.GetAccountList();
 
-			var newAccList = from a in accList
+			var accEnumerable = from a in accList
 				where Context.Guild.GetUser(a.Id) != null
-				select a;
+				select a;	
 
-			var userAccounts = newAccList.ToList();
-			int maxIq = userAccounts.Max(t => t.Iq);
-			var smartest = from a in userAccounts
-				where a.Iq == maxIq
-				select a;
+			var guildAccList = accEnumerable.ToList().OrderByDescending(o => o.Iq).ToList();
 
-			string msg = "";
-			foreach (var userAccount in smartest.ToList())
+			var embed = new EmbedBuilder
 			{
-				msg += $"- {GetNickname(Context.Guild.GetUser(userAccount.Id))}\n";
+				Color = Color.Green
+			};
+			for (var i = 0; i < 5; i++)
+			{
+				embed.Description += $"{1 + i}. {GetNickname(Context.Guild.GetUser(guildAccList[i].Id))} - {guildAccList[i].Iq} IQ\n";
 			}
 
-			msg += $"With an IQ of {maxIq}!";
-
-			await Context.Channel.SendMessageAsync(msg);
+			await Context.Channel.SendMessageAsync("", embed: embed);
 		}
 		[Command("dumbest")]
 		public async Task Dumbest()
 		{
-			if (!CheckFunModule(Context).Result) return;
+			if (!CheckFunEnabled(Context).Result) return;
 
 			var accList = UserAccounts.GetAccountList();
 
-			var newAccList = from a in accList
+			var accEnumerable = from a in accList
 				where Context.Guild.GetUser(a.Id) != null && a.Iq != 0
-				select a;
+				select a;	
 
-			var userAccounts = newAccList.ToList();
-			int minIq = userAccounts.Min(t => t.Iq);
-			var dumbest = from a in userAccounts
-				where a.Iq == minIq
-				select a;
+			var guildAccList = accEnumerable.ToList().OrderBy(o => o.Iq).ToList();
 
-			string msg = "";
-			foreach (var userAccount in dumbest.ToList())
+			var embed = new EmbedBuilder
 			{
-				msg += $"- {GetNickname(Context.Guild.GetUser(userAccount.Id))}\n";
+				Color = Color.Green
+			};
+			for (var i = 0; i < 5; i++)
+			{
+				embed.Description += $"{1 + i}. {GetNickname(Context.Guild.GetUser(guildAccList[i].Id))} - {guildAccList[i].Iq} IQ\n";
 			}
 
-			msg += $"With an IQ of {minIq}!";
-
-			await Context.Channel.SendMessageAsync(msg);
+			await Context.Channel.SendMessageAsync("", embed: embed);
 		}
 
 		private class FishEmote : IWeighted
@@ -248,7 +243,7 @@ namespace TomoriBot.Modules
 		[Command("fishy")]
 		public async Task Fishy()
 		{
-			if (!CheckFunModule(Context).Result) return;
+			if (!CheckFunEnabled(Context).Result) return;
 
 			var fishEmotes = new List<FishEmote>()
 			{
@@ -277,7 +272,7 @@ namespace TomoriBot.Modules
 		[Command("neko")]
 		public async Task Neko()
 		{
-			if (!CheckFunModule(Context).Result) return;
+			if (!CheckFunEnabled(Context).Result) return;
 
 			string json;
 			using (var client = new WebClient())

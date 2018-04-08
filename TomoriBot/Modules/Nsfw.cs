@@ -18,7 +18,7 @@ namespace TomoriBot.Modules
 		[Command("danbooru")]
 		public async Task Danbooru([Remainder]string input)
 		{
-			if (!CheckNsfwModule(Context).Result) return;
+			if (!CheckNsfwEnabled(Context).Result) return;
 
 			string[] tags = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 			if (tags.Length > 2)
@@ -54,7 +54,7 @@ namespace TomoriBot.Modules
 		[Command("danbooruf")]
 		public async Task Danbooru(ushort amt, [Remainder] string input)
 		{
-			if (!CheckNsfwModule(Context).Result) return;
+			if (!CheckNsfwEnabled(Context).Result) return;
 
 			string[] args = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 			if (args[0].ToLower().Contains("speed:"))

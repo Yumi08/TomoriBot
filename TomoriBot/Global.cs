@@ -126,7 +126,7 @@ namespace TomoriBot
 			return false;
 		}
 
-		public static async Task<bool> CheckFunModule(SocketCommandContext context)
+		public static async Task<bool> CheckFunEnabled(SocketCommandContext context)
 		{
 			var guild = Servers.GetServer(context.Guild);
 			if (guild.EnableFunModule) return true;
@@ -135,7 +135,7 @@ namespace TomoriBot
 			return false;
 		}
 
-		public static async Task<bool> CheckNsfwModule(SocketCommandContext context)
+		public static async Task<bool> CheckNsfwEnabled(SocketCommandContext context)
 		{
 			var guild = Servers.GetServer(context.Guild);
 			if (guild.EnableNsfwModule) return true;
