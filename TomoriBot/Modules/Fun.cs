@@ -3,7 +3,9 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using TomoriBot.Core.UserProfiles;
 using static TomoriBot.Global;
 
@@ -15,6 +17,8 @@ namespace TomoriBot.Modules
 		[Alias("choose")]
 		public async Task Choose([Remainder]string input)
 		{
+			if (!CheckFunModule(Context).Result) return;
+
 			var args = input.Split(new [] {','}, StringSplitOptions.RemoveEmptyEntries);
 
 			var m = await Context.Channel.SendMessageAsync("Hmm.....");
@@ -27,6 +31,8 @@ namespace TomoriBot.Modules
 		[Command("tag")]
 		public async Task Tag(SocketGuildUser user, [Remainder]string value)
 		{
+			if (!CheckFunModule(Context).Result) return;
+
 			var userAccount = UserAccounts.GetAccount(Context.User);
 
 			userAccount.AddTag(user.Id, value);
@@ -37,6 +43,8 @@ namespace TomoriBot.Modules
 		[Command("tag")]
 		public async Task Tag(SocketUser user)
 		{
+			if (!CheckFunModule(Context).Result) return;
+
 			var userAccount = UserAccounts.GetAccount(Context.User);
 
 			var tag = userAccount.GetTag(user.Id, out bool success);
@@ -51,6 +59,8 @@ namespace TomoriBot.Modules
 		[Alias("removetag")]
 		public async Task ClearTag(SocketGuildUser user)
 		{
+			if (!CheckFunModule(Context).Result) return;
+
 			var userAccount = UserAccounts.GetAccount(Context.User);
 
 			userAccount.RemoveTag(user.Id);
@@ -61,6 +71,8 @@ namespace TomoriBot.Modules
 		[Command("tags")]
 		public async Task Tags()
 		{
+			if (!CheckFunModule(Context).Result) return;
+
 			var u = Context.Message.Author;
 			var userAccount = UserAccounts.GetAccount(Context.User);
 			var m = "";
@@ -89,6 +101,8 @@ namespace TomoriBot.Modules
 		[Command("x")]
 		public async Task X([Remainder] string input)
 		{
+			if (!CheckFunModule(Context).Result) return;
+
 			var guildContextUser = (SocketGuildUser) Context.User;
 
 			await Context.Channel.SendMessageAsync($"{GetNickname(guildContextUser)} doubts that {input}!");
@@ -98,6 +112,8 @@ namespace TomoriBot.Modules
 		[Alias("rockpaperscissors")]
 		public async Task Rps(SocketGuildUser user)
 		{
+			if (!CheckFunModule(Context).Result) return;
+
 			if (user == Context.User)
 			{
 				await Context.Channel.SendMessageAsync("You can't play with yourself! ~~that sounds so lewd~~");
@@ -137,6 +153,8 @@ namespace TomoriBot.Modules
 		[Alias("intelligence")]
 		public async Task Intelligence()
 		{
+			if (!CheckFunModule(Context).Result) return;
+
 			var guildContextUser = (SocketGuildUser) Context.User;
 			var userAccount = UserAccounts.GetAccount(Context.User);
 
@@ -153,6 +171,8 @@ namespace TomoriBot.Modules
 		[Alias("intelligence")]
 		public async Task Intelligence(SocketGuildUser user)
 		{
+			if (!CheckFunModule(Context).Result) return;
+
 			var userAccount = UserAccounts.GetAccount(user);
 
 			if (userAccount.Iq == 0)
@@ -167,6 +187,8 @@ namespace TomoriBot.Modules
 		[Command("smartest")]
 		public async Task Smartest()
 		{
+			if (!CheckFunModule(Context).Result) return;
+
 			var accList = UserAccounts.GetAccountList();
 			int maxIq = accList.Max(t => t.Iq);
 			var smartest = from a in accList
@@ -193,6 +215,8 @@ namespace TomoriBot.Modules
 		[Command("fishy")]
 		public async Task Fishy()
 		{
+			if (!CheckFunModule(Context).Result) return;
+
 			var fishEmotes = new List<FishEmote>()
 			{
 				new FishEmote{Name = ":octopus:", Weight = 5},
@@ -213,13 +237,32 @@ namespace TomoriBot.Modules
 			await Context.Channel.SendMessageAsync(randomEmote.Name);
 		}
 
-		[Command("spamkanna")]
-		public Task SpamKanna(string input)
+		/// <summary>
+		/// Gets a random neko image from the internet
+		/// </summary>
+		/// <returns></returns>
+		[Command("neko")]
+		public async Task Neko()
 		{
-			if (input == "true") Global.SpamKanna = true;
-			else Global.SpamKanna = false;
+			if (!CheckFunModule(Context).Result) return;
 
-			return Task.CompletedTask;
+			string json;
+			using (var client = new WebClient())
+			{
+				json = client.DownloadString("https://nekos.life/api/neko");
+			}
+
+			var _object = JsonConvert.DeserializeObject<dynamic>(json);
+			await Context.Channel.SendMessageAsync(_object.neko.ToString());
 		}
+
+		//[Command("spamkanna")]
+		//public Task SpamKanna(string input)
+		//{
+		//	if (input == "true") Global.SpamKanna = true;
+		//	else Global.SpamKanna = false;
+
+		//	return Task.CompletedTask;
+		//}
 	}
 }

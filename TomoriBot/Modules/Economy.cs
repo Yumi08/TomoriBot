@@ -15,6 +15,8 @@ namespace TomoriBot.Modules
 		[Alias("give")]
 		public async Task Transfer(SocketGuildUser recipient, uint amt)
 		{
+			if (!CheckEconomyEnabled(Context).Result) return;
+
 			var callerAccount = UserAccounts.GetAccount(Context.User);
 
 			if (await CheckEnoughMoney(amt, callerAccount)) return;
@@ -36,6 +38,8 @@ namespace TomoriBot.Modules
 		[Command("bet")]
 		public async Task Bet(uint amt)
 		{
+			if (!CheckEconomyEnabled(Context).Result) return;
+
 			var userAccount = UserAccounts.GetAccount(Context.User);
 
 			if (await CheckEnoughMoney(amt, userAccount)) return;
@@ -57,6 +61,8 @@ namespace TomoriBot.Modules
 		[Alias("trash")]
 		public async Task Dump(uint amt)
 		{
+			if (!CheckEconomyEnabled(Context).Result) return;
+
 			var userAccount = UserAccounts.GetAccount(Context.User);
 
 			if (await CheckEnoughMoney(amt, userAccount)) return;
@@ -69,6 +75,8 @@ namespace TomoriBot.Modules
 		[Command("bury")]
 		public async Task Bury(uint amt)
 		{
+			if (!CheckEconomyEnabled(Context).Result) return;
+
 			var userAccount = UserAccounts.GetAccount(Context.User);
 
 			if (await CheckEnoughMoney(amt, userAccount)) return;
@@ -88,6 +96,8 @@ namespace TomoriBot.Modules
 		[Command("unbury")]
 		public async Task Unbury()
 		{
+			if (!CheckEconomyEnabled(Context).Result) return;
+
 			var userAccount = UserAccounts.GetAccount(Context.User);
 
 			var ds = new DataStorage<string,uint>("Storage/DataStorage.json");
@@ -108,6 +118,8 @@ namespace TomoriBot.Modules
 		[Command("daily")]
 		public async Task Daily()
 		{
+			if (!CheckEconomyEnabled(Context).Result) return;
+
 			var userAccount = UserAccounts.GetAccount(Context.User);
 
 			if (Math.Abs(DateTime.Today.Day - userAccount.PreviousDailyTime.Day) < 1)
@@ -134,16 +146,16 @@ namespace TomoriBot.Modules
 			userAccount.PreviousDailyTime = DateTime.Now;
 		}
 
-		[Command("!clearlast")]
-		[RequireUserPermission(GuildPermission.Administrator)]
-		public Task CLearlast(int days)
-		{
-			var userAccount = UserAccounts.GetAccount(Context.User);
+		//[Command("!clearlast")]
+		//[RequireUserPermission(GuildPermission.Administrator)]
+		//public Task CLearlast(int days)
+		//{
+		//	var userAccount = UserAccounts.GetAccount(Context.User);
 
-			userAccount.PreviousDailyTime = DateTime.Today.AddDays(-days);
+		//	userAccount.PreviousDailyTime = DateTime.Today.AddDays(-days);
 
-			return Task.CompletedTask;
-		}
+		//	return Task.CompletedTask;
+		//}
 
 
 		private async Task<bool> CheckEnoughMoney(uint amt, UserAccount userAccount)

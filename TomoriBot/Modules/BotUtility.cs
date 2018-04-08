@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Discord;
 using Discord.Commands;
+using TomoriBot.Core.Guilds;
 using TomoriBot.Core.UserProfiles;
 
 namespace TomoriBot.Modules
@@ -124,6 +126,16 @@ namespace TomoriBot.Modules
 			await Context.Channel.SendMessageAsync("Logging out!");
 			Console.WriteLine("Logging out!");
 			Environment.Exit(0);
+		}
+
+		[Command("registerserver")]
+		[RequireUserPermission(GuildPermission.Administrator)]
+		public async Task RegisterServer()
+		{
+			if (await Global.ValidateUser(Context)) return;
+
+			var server = Servers.GetServer(Context.Guild);
+			await Context.Channel.SendMessageAsync($"Successfully registered/updated server \"{server.Name}\"!");
 		}
 	}
 }

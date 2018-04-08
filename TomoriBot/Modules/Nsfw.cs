@@ -4,16 +4,23 @@ using System.Net;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Newtonsoft.Json;
+using static TomoriBot.Global;
 
 namespace TomoriBot.Modules
 {
-	public class Media : ModuleBase<SocketCommandContext>
+	public class Nsfw : ModuleBase<SocketCommandContext>
 	{
+		/// <summary>
+		/// Gets a random danbooru image
+		/// </summary>
+		/// <param name="input">Tags</param>
+		/// <returns></returns>
 		[Command("danbooru")]
 		public async Task Danbooru([Remainder]string input)
 		{
+			if (!CheckNsfwModule(Context).Result) return;
 
-			string[] tags = input.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+			string[] tags = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 			if (tags.Length > 2)
 			{
 				await Context.Channel.SendMessageAsync("Cannot use more than 2 tags!");
@@ -38,9 +45,17 @@ namespace TomoriBot.Modules
 			await Context.Channel.SendMessageAsync($"http://danbooru.donmai.us/posts/{dataObject["id"]}");
 		}
 
+		/// <summary>
+		/// Gets a formatted random danbooru image
+		/// </summary>
+		/// <param name="amt">Amount of images</param>
+		/// <param name="input">Tags</param>
+		/// <returns></returns>
 		[Command("danbooruf")]
 		public async Task Danbooru(ushort amt, [Remainder] string input)
 		{
+			if (!CheckNsfwModule(Context).Result) return;
+
 			string[] args = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 			if (args[0].ToLower().Contains("speed:"))
 			{
@@ -81,7 +96,14 @@ namespace TomoriBot.Modules
 				await Task.Delay(2500);
 			}
 		}
-
+		/// <summary>
+		/// Gets a formatted random danbooru image
+		/// </summary>
+		/// <param name="amt">Amount of images</param>
+		/// <param name="speed">Speed of posting the images</param>
+		/// <param name="tags">Tags</param>
+		/// <returns></returns>
+		// This function is NOT called by discord. It's called from the first overload.
 		public async Task Danbooru(ushort amt, string speed, [Remainder] string[] tags)
 		{
 			var speeds = new Dictionary<string, int>()

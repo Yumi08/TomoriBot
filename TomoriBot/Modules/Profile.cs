@@ -12,6 +12,8 @@ namespace TomoriBot.Modules
 		[Command("profile")]
 		public async Task _Profile(SocketGuildUser user)
 		{
+			if (!CheckProfilesEnabled(Context).Result) return;
+
 			var userAccount = UserAccounts.GetAccount(user);
 
 			var embed = new EmbedBuilder()
@@ -31,6 +33,8 @@ namespace TomoriBot.Modules
 		[Command("profile")]
 		public async Task _Profile()
 		{
+			if (!CheckProfilesEnabled(Context).Result) return;
+			
 			var user = Context.User;
 
 			await _Profile((SocketGuildUser)user);

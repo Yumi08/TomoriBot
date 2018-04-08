@@ -14,6 +14,8 @@ namespace TomoriBot.Modules
 		[RequireUserPermission(GuildPermission.ManageNicknames)]
 		public async Task Nickname(SocketGuildUser user, [Remainder]string newName)
 		{
+			if (!CheckModerationEnabled(Context).Result) return;
+
 			await Context.Guild.GetUser(user.Id).ModifyAsync(x => { x.Nickname = newName; });
 		}
 
@@ -21,6 +23,8 @@ namespace TomoriBot.Modules
 		[RequireUserPermission(GuildPermission.KickMembers)]
 		public async Task Kick(SocketGuildUser user)
 		{
+			if (!CheckModerationEnabled(Context).Result) return;
+
 			await user.KickAsync();
 			await Context.Channel.SendMessageAsync($"{GetNickname(user)} ({user.Id}) has been kicked!");
 		}
@@ -28,6 +32,8 @@ namespace TomoriBot.Modules
 		[RequireUserPermission(GuildPermission.KickMembers)]
 		public async Task Kick(SocketGuildUser user, [Remainder]string reason)
 		{
+			if (!CheckModerationEnabled(Context).Result) return;
+
 			await user.KickAsync(reason);
 			await Context.Channel.SendMessageAsync($"{GetNickname(user)} ({user.Id}) has been kicked!");
 		}
@@ -36,6 +42,8 @@ namespace TomoriBot.Modules
 		[RequireUserPermission(GuildPermission.BanMembers)]
 		public async Task Ban(SocketGuildUser user)
 		{
+			if (!CheckModerationEnabled(Context).Result) return;
+
 			await Context.Guild.AddBanAsync(user);
 			await Context.Channel.SendMessageAsync($"{GetNickname(user)} ({user.Id}) has been banned!");
 		}
@@ -43,6 +51,8 @@ namespace TomoriBot.Modules
 		[RequireUserPermission(GuildPermission.BanMembers)]
 		public async Task Ban(SocketGuildUser user, [Remainder]string reason)
 		{
+			if (!CheckModerationEnabled(Context).Result) return;
+
 			await Context.Guild.AddBanAsync(user, reason: reason);
 			await Context.Channel.SendMessageAsync($"{GetNickname(user)} ({user.Id}) has been banned!");
 		}
@@ -51,6 +61,8 @@ namespace TomoriBot.Modules
 		[RequireUserPermission(ChannelPermission.ManagePermissions)]
 		public async Task Mute(SocketGuildUser user)
 		{
+			if (!CheckModerationEnabled(Context).Result) return;
+
 			var mutedRole = InitializeMute();
 
 			// .Result can cause deadlock
@@ -93,38 +105,40 @@ namespace TomoriBot.Modules
 		[RequireUserPermission(ChannelPermission.ManagePermissions)]
 		public async Task Unmute(SocketGuildUser user)
 		{
+			if (!CheckModerationEnabled(Context).Result) return;
+
 			var ds = new DataStorage<string, ulong>("Storage/IDStorage.json");
 			var mutedRole = Context.Guild.GetRole(ds.GetPair("MutedRole"));
 
 			await user.RemoveRoleAsync(Context.Guild.Roles.First(r => r.Id == mutedRole?.Id));
 		}
 
-		[Command("bean")]
-		[RequireUserPermission(GuildPermission.ManageRoles)]
-		public async Task Bean(SocketGuildUser user)
-		{
-			var ds = new DataStorage<string, ulong>("Storage/IDStorage.json");
+		//[Command("bean")]
+		//[RequireUserPermission(GuildPermission.ManageRoles)]
+		//public async Task Bean(SocketGuildUser user)
+		//{
+		//	var ds = new DataStorage<string, ulong>("Storage/IDStorage.json");
 
-			var beanedRoleId = ds.GetPair("BeanedRoleID");
-			var role = Context.Guild.Roles.FirstOrDefault(x => x.Id == beanedRoleId);
+		//	var beanedRoleId = ds.GetPair("BeanedRoleID");
+		//	var role = Context.Guild.Roles.FirstOrDefault(x => x.Id == beanedRoleId);
 
-			await (user as IGuildUser).AddRoleAsync(role);
+		//	await (user as IGuildUser).AddRoleAsync(role);
 
-			await Context.Channel.SendMessageAsync($"{GetNickname(user)} was beaned!");
-		}
+		//	await Context.Channel.SendMessageAsync($"{GetNickname(user)} was beaned!");
+		//}
 
-		[Command("unbean")]
-		[RequireUserPermission(GuildPermission.ManageRoles)]
-		public async Task Unbean(SocketGuildUser user)
-		{
-			var ds = new DataStorage<string, ulong>("Storage/IDStorage.json");
+		//[Command("unbean")]
+		//[RequireUserPermission(GuildPermission.ManageRoles)]
+		//public async Task Unbean(SocketGuildUser user)
+		//{
+		//	var ds = new DataStorage<string, ulong>("Storage/IDStorage.json");
 
-			var beanedRoleId = ds.GetPair("BeanedRoleID");
-			var role = Context.Guild.Roles.FirstOrDefault(x => x.Id == beanedRoleId);
+		//	var beanedRoleId = ds.GetPair("BeanedRoleID");
+		//	var role = Context.Guild.Roles.FirstOrDefault(x => x.Id == beanedRoleId);
 
-			await (user as IGuildUser).RemoveRoleAsync(role);
+		//	await (user as IGuildUser).RemoveRoleAsync(role);
 
-			await Context.Channel.SendMessageAsync($"{GetNickname(user)} was unbeaned!");
-		}
+		//	await Context.Channel.SendMessageAsync($"{GetNickname(user)} was unbeaned!");
+		//}
 	}
 }

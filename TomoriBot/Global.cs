@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
+using TomoriBot.Core.Guilds;
 
 namespace TomoriBot
 {
@@ -97,5 +98,54 @@ namespace TomoriBot
 
 			return false;
 		}
+
+		#region ModuleCheckers
+
+		public static async Task<bool> CheckModerationEnabled(SocketCommandContext context)
+		{
+			var guild = Servers.GetServer(context.Guild);
+			if (guild.EnableModerationModule) return true;
+
+			await context.Channel.SendMessageAsync("The Moderation module is currently disabled.");
+			return false;
+		}
+
+		public static async Task<bool> CheckProfilesEnabled(SocketCommandContext context)
+		{
+			var guild = Servers.GetServer(context.Guild);
+			if (guild.EnableProfilesModule) return true;
+
+			await context.Channel.SendMessageAsync("The Profile module is currently disabled.");
+			return false;
+		}
+
+		public static async Task<bool> CheckEconomyEnabled(SocketCommandContext context)
+		{
+			var guild = Servers.GetServer(context.Guild);
+			if (guild.EnableEconomyModule) return true;
+
+			await context.Channel.SendMessageAsync("The Economy module is currently disabled.");
+			return false;
+		}
+
+		public static async Task<bool> CheckFunModule(SocketCommandContext context)
+		{
+			var guild = Servers.GetServer(context.Guild);
+			if (guild.EnableFunModule) return true;
+
+			await context.Channel.SendMessageAsync("The Fun module is currently disabled.");
+			return false;
+		}
+
+		public static async Task<bool> CheckNsfwModule(SocketCommandContext context)
+		{
+			var guild = Servers.GetServer(context.Guild);
+			if (guild.EnableNsfwModule) return true;
+
+			await context.Channel.SendMessageAsync("The Nsfw module is currently disabled.");
+			return false;
+		}
+
+		#endregion
 	}
 }

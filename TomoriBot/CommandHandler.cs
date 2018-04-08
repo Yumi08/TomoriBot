@@ -44,13 +44,14 @@ namespace TomoriBot
 
 			TrivialEnd:
 			var argPos = 0;
-			if (!msg.HasStringPrefix(Config.bot.cmdPrefix, ref argPos))
+			// NOTE: ToString() can cause issues by spitting out the type instead of the char
+			if (!msg.HasStringPrefix(Config.bot.cmdPrefix.ToString(), ref argPos))
 			{
 				MessageReceievedEventArgs e = new MessageReceievedEventArgs {Msg = msg};
 				OnMessageReceived(e);
 			}
 
-				if ((msg.HasStringPrefix(Config.bot.cmdPrefix, ref argPos)
+				if ((msg.HasStringPrefix(Config.bot.cmdPrefix.ToString(), ref argPos)
 			|| msg.HasMentionPrefix(_client.CurrentUser, ref argPos)) && !context.IsPrivate)
 			{
 				var result = await _service.ExecuteAsync(context, argPos);

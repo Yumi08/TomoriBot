@@ -2,6 +2,7 @@
 using System.Linq;
 using Discord.Commands;
 using Discord.WebSocket;
+using TomoriBot.Core.Guilds;
 using TomoriBot.Core.UserProfiles;
 using static TomoriBot.Global;
 
@@ -9,7 +10,7 @@ namespace TomoriBot.Core.LevelingSystem
 {
 	internal static class Leveling
 	{
-		private static int[] _messageMilestones = new[] {100, 500, 1000, 5000, 10000, 25000, 50000, 100000};
+		private static readonly int[] MessageMilestones = new[] {100, 500, 1000, 5000, 10000, 25000, 50000, 100000};
 
 		/// <summary>
 		/// Fires whenever a user sends a message that the bot can see
@@ -49,10 +50,10 @@ namespace TomoriBot.Core.LevelingSystem
 		/// <param name="totalMsgs"></param>
 		private static void OnMessageAmount(SocketCommandContext context, uint totalMsgs)
 		{
-			for (var i = 0; i < _messageMilestones.Length; i++)
+			for (var i = 0; i < MessageMilestones.Length; i++)
 			{
-				if (totalMsgs ==_messageMilestones[i])
-					NotifyTotalMessages(context, _messageMilestones[i]);
+				if (totalMsgs ==MessageMilestones[i])
+					NotifyTotalMessages(context, MessageMilestones[i]);
 			}
 		}
 
@@ -63,6 +64,8 @@ namespace TomoriBot.Core.LevelingSystem
 		/// <param name="totalMsgs"></param>
 		private static async void NotifyTotalMessages(SocketCommandContext context, int totalMsgs)
 		{
+			if (!Servers.GetServer(context.Guild).EnableLevelUpMessages) return;
+
 			await context.Channel.SendMessageAsync($"{GetNickname((SocketGuildUser)context.User)} has sent {totalMsgs} messages so far! Keep it up! <3");
 		}
 	}

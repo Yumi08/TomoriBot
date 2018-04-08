@@ -1,8 +1,4 @@
-﻿using System.Globalization;
-using System.Threading.Tasks;
-using Discord.Commands;
-using UnitsNet;
-using UnitsNet.Units;
+﻿using Discord.Commands;
 
 namespace TomoriBot.Modules
 {

@@ -30,7 +30,7 @@ namespace TomoriBot
 	public struct BotConfig
 	{
 		public string token;
-		public string cmdPrefix;
+		public char cmdPrefix;
 		public string botName;
 		public string botId;
 	}
