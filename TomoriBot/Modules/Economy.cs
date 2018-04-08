@@ -4,6 +4,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using TomoriBot.Core;
+using TomoriBot.Core.Guilds;
 using TomoriBot.Core.UserProfiles;
 using static TomoriBot.Global;
 
@@ -81,8 +82,8 @@ namespace TomoriBot.Modules
 
 			if (await CheckEnoughMoney(amt, userAccount)) return;
 
-			var ds = new DataStorage<string, uint>("Storage/DataStorage.json");
-			ds.SetPair("Buried", amt + ds.GetOrCreatePair("Buried"));
+			var server = Servers.GetServer(Context.Guild);
+			server.Buried += amt;
 
 			userAccount.Yen -= amt;
 
@@ -91,6 +92,8 @@ namespace TomoriBot.Modules
 			await Task.Delay(1200);
 			await m.DeleteAsync();
 			await Context.Message.DeleteAsync();
+
+			Servers.SaveServers();
 		}
 
 		[Command("unbury")]
@@ -100,8 +103,8 @@ namespace TomoriBot.Modules
 
 			var userAccount = UserAccounts.GetAccount(Context.User);
 
-			var ds = new DataStorage<string,uint>("Storage/DataStorage.json");
-			var buried = ds.GetOrCreatePair("Buried");
+			var server = Servers.GetServer(Context.Guild);
+			var buried = server.Buried;
 
 			if (buried == 0)
 			{
@@ -111,7 +114,9 @@ namespace TomoriBot.Modules
 
 			userAccount.Yen += buried;
 			await Context.Channel.SendMessageAsync($"{GetNickname((SocketGuildUser)Context.User)} unburied ¥{buried}!");
-			ds.SetPair("Buried", 0);
+			server.Buried = 0;
+
+			Servers.SaveServers();
 		}
 
 		// TIMING SYSTEM DOESN'T WORK, HOUR GOES UP INSTEAD OF DOWN.

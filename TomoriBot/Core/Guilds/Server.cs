@@ -23,5 +23,7 @@
 		public bool EnableEconomyModule { get; set; }
 		public bool EnableFunModule { get; set; }
 		public bool EnableNsfwModule { get; set; }
+
+		public uint Buried { get; set; }
 	}
 }
