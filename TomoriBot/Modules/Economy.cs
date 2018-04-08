@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using TomoriBot.Core.Guilds;
@@ -166,6 +167,27 @@ namespace TomoriBot.Modules
 		{
 			if (!CheckEconomyEnabled(Context).Result) return;
 
+			var accList = UserAccounts.GetAccountList();
+
+			var accEnumerable = from a in accList
+				where Context.Guild.GetUser(a.Id) != null
+				select a;
+
+			var yen = 0u;
+			foreach (var user in accEnumerable)
+			{
+				yen += user.Yen;
+			}
+
+			await Context.Channel.SendMessageAsync(
+				$"¥{yen} total yen is distributed ~~equally~~ among {accEnumerable.Count()} users within the server.");
+		}
+
+		[Command("totalglobalyen")]
+		public async Task TotalGlobalYen()
+		{
+			if (!CheckEconomyEnabled(Context).Result) return;
+
 			var users = UserAccounts.GetAccountList();
 
 			var yen = 0u;
@@ -175,7 +197,7 @@ namespace TomoriBot.Modules
 			}
 
 			await Context.Channel.SendMessageAsync(
-				$"¥{yen} total yen is distributed ~~equally~~ among {UserAccounts.UserAccountCount()} users.");
+				$"¥{yen} total yen is distributed ~~equally~~ among {UserAccounts.UserAccountCount()} users globally.");
 		}
 
 		[Command("richest")]
@@ -191,13 +213,36 @@ namespace TomoriBot.Modules
 
 			var guildAccList = accEnumerable.ToList().OrderByDescending(o => o.Yen).ToList();
 
-			var msg = "";
+			var embed = new EmbedBuilder
+			{
+				Color = Color.Green
+			};
 			for (var i = 0; i < 5; i++)
 			{
-				msg += $"{1 + i}. {GetNickname(Context.Guild.GetUser(guildAccList[i].Id))} - {guildAccList[i].Yen}\n";
+				embed.Description += $"{1 + i}. {GetNickname(Context.Guild.GetUser(guildAccList[i].Id))} - ¥{guildAccList[i].Yen}\n";
 			}
 
-			await Context.Channel.SendMessageAsync(msg);
+			await Context.Channel.SendMessageAsync("", embed: embed);
+		}
+
+		[Command("globalrichest")]
+		public async Task GlobalRichest()
+		{
+			if (!CheckEconomyEnabled(Context).Result) return;
+
+			var accList = UserAccounts.GetAccountList();
+			accList = accList.OrderByDescending(o => o.Yen).ToList();
+
+			var embed = new EmbedBuilder
+			{
+				Color = Color.Green
+			};
+			for (var i = 0; i < 10; i++)
+			{
+				embed.Description += $"{1 + i}. {Context.Client.GetUser(accList[i].Id)?.Username} - ¥{accList[i].Yen}\n";
+			}
+
+			await Context.Channel.SendMessageAsync("", embed: embed);
 		}
 
 		private async Task<bool> CheckEnoughMoney(uint amt, UserAccount userAccount)
