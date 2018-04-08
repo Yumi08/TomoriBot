@@ -192,7 +192,7 @@ namespace TomoriBot.Modules
 			var accList = UserAccounts.GetAccountList();
 
 			var newAccList = from a in accList
-				where a != null && a.Iq != 0
+				where Context.Guild.GetUser(a.Id) != null
 				select a;
 
 			var userAccounts = newAccList.ToList();
