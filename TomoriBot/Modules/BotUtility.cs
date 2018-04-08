@@ -137,5 +137,17 @@ namespace TomoriBot.Modules
 			var server = Servers.GetServer(Context.Guild);
 			await Context.Channel.SendMessageAsync($"Successfully registered/updated server \"{server.Name}\"!");
 		}
+
+		[Command("report")]
+		public async Task ReportBug([Remainder]string input)
+		{
+			Console.WriteLine($"BUG REPORTED: {input}");
+
+			var ds = new DataStorage<uint, string>("Storage/BugReportStorage.json");
+			uint key = (uint)ds.GetPairCount() + 1;
+			ds.SetPair(key, input);
+
+			await Context.Channel.SendMessageAsync("Thank you so much for your feedback!");
+		}
 	}
 }

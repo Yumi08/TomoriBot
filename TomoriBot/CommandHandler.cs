@@ -37,9 +37,6 @@ namespace TomoriBot
 			#region Trivial
 			// Leveling up
 			Leveling.UserSentMessage(context);
-
-			// Spams KannaMagik reaction if enabled (toggled by command)
-			if (Global.SpamKanna) await msg.AddReactionAsync(context.Guild.Emotes.First(e => e.Id == 398211422217306123));
 			#endregion
 
 			TrivialEnd:

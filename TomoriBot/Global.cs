@@ -15,8 +15,6 @@ namespace TomoriBot
 	{
 		public static Random R = new Random();
 
-		public static bool SpamKanna;
-
 		/// <summary>
 		/// Gets time since 1/1/2000.
 		/// </summary>
