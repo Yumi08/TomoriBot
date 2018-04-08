@@ -162,6 +162,24 @@ namespace TomoriBot.Modules
 		//	return Task.CompletedTask;
 		//}
 
+		[Command("totalyen")]
+		public async Task TotalYen()
+		{
+			if (!CheckEconomyEnabled(Context).Result) return;
+
+			var users = UserAccounts.GetAccountList();
+
+			var yen = 0u;
+			foreach (var user in users)
+			{
+				yen += user.Yen;
+			}
+
+			await Context.Channel.SendMessageAsync(
+				$"¥{yen} total yen is distributed ~~equally~~ among {UserAccounts.UserAccountCount()} users.");
+		}
+
+
 
 		private async Task<bool> CheckEnoughMoney(uint amt, UserAccount userAccount)
 		{
