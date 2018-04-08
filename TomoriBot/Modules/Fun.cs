@@ -204,12 +204,37 @@ namespace TomoriBot.Modules
 			string msg = "";
 			foreach (var userAccount in smartest.ToList())
 			{
-				if (Context.Guild.GetUser(userAccount.Id) != null)
-					msg += $"- {GetNickname(Context.Guild.GetUser(userAccount.Id))}\n";
-				else msg += $"- {Context.Client.GetUser(userAccount.Id).Username}\n";
+				msg += $"- {GetNickname(Context.Guild.GetUser(userAccount.Id))}\n";
 			}
 
-			msg += $"With an IQ of {maxIq}";
+			msg += $"With an IQ of {maxIq}!";
+
+			await Context.Channel.SendMessageAsync(msg);
+		}
+		[Command("dumbest")]
+		public async Task Dumbest()
+		{
+			if (!CheckFunModule(Context).Result) return;
+
+			var accList = UserAccounts.GetAccountList();
+
+			var newAccList = from a in accList
+				where Context.Guild.GetUser(a.Id) != null && a.Iq != 0
+				select a;
+
+			var userAccounts = newAccList.ToList();
+			int minIq = userAccounts.Min(t => t.Iq);
+			var dumbest = from a in userAccounts
+				where a.Iq == minIq
+				select a;
+
+			string msg = "";
+			foreach (var userAccount in dumbest.ToList())
+			{
+				msg += $"- {GetNickname(Context.Guild.GetUser(userAccount.Id))}\n";
+			}
+
+			msg += $"With an IQ of {minIq}!";
 
 			await Context.Channel.SendMessageAsync(msg);
 		}
