@@ -16,6 +16,8 @@ namespace TomoriBot.Modules
 		{
 			if (!CheckModerationEnabled(Context).Result) return;
 
+			if (user.GuildPermissions.Administrator) return;
+
 			await Context.Guild.GetUser(user.Id).ModifyAsync(x => { x.Nickname = newName; });
 		}
 
@@ -25,6 +27,8 @@ namespace TomoriBot.Modules
 		{
 			if (!CheckModerationEnabled(Context).Result) return;
 
+			if (user.GuildPermissions.Administrator) return;
+
 			await user.KickAsync();
 			await Context.Channel.SendMessageAsync($"{GetNickname(user)} ({user.Id}) has been kicked!");
 		}
@@ -33,6 +37,8 @@ namespace TomoriBot.Modules
 		public async Task Kick(SocketGuildUser user, [Remainder]string reason)
 		{
 			if (!CheckModerationEnabled(Context).Result) return;
+
+			if (user.GuildPermissions.Administrator) return;
 
 			await user.KickAsync(reason);
 			await Context.Channel.SendMessageAsync($"{GetNickname(user)} ({user.Id}) has been kicked!");
@@ -44,6 +50,8 @@ namespace TomoriBot.Modules
 		{
 			if (!CheckModerationEnabled(Context).Result) return;
 
+			if (user.GuildPermissions.Administrator) return;
+
 			await Context.Guild.AddBanAsync(user);
 			await Context.Channel.SendMessageAsync($"{GetNickname(user)} ({user.Id}) has been banned!");
 		}
@@ -52,6 +60,8 @@ namespace TomoriBot.Modules
 		public async Task Ban(SocketGuildUser user, [Remainder]string reason)
 		{
 			if (!CheckModerationEnabled(Context).Result) return;
+
+			if (user.GuildPermissions.Administrator) return;
 
 			await Context.Guild.AddBanAsync(user, reason: reason);
 			await Context.Channel.SendMessageAsync($"{GetNickname(user)} ({user.Id}) has been banned!");
@@ -62,6 +72,8 @@ namespace TomoriBot.Modules
 		public async Task Mute(SocketGuildUser user)
 		{
 			if (!CheckModerationEnabled(Context).Result) return;
+
+			if (user.GuildPermissions.Administrator) return;
 
 			var mutedRole = InitializeMute();
 
@@ -106,6 +118,8 @@ namespace TomoriBot.Modules
 		public async Task Unmute(SocketGuildUser user)
 		{
 			if (!CheckModerationEnabled(Context).Result) return;
+
+			if (user.GuildPermissions.Administrator) return;
 
 			var ds = new DataStorage<string, ulong>("Storage/IDStorage.json");
 			var mutedRole = Context.Guild.GetRole(ds.GetPair("MutedRole"));
