@@ -1,9 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
-using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using TomoriBot.Core;
 using TomoriBot.Core.Guilds;
 using TomoriBot.Core.UserProfiles;
 using static TomoriBot.Global;
@@ -179,7 +178,27 @@ namespace TomoriBot.Modules
 				$"¥{yen} total yen is distributed ~~equally~~ among {UserAccounts.UserAccountCount()} users.");
 		}
 
+		[Command("richest")]
+		public async Task Richest()
+		{
+			if (!CheckEconomyEnabled(Context).Result) return;
 
+			var accList = UserAccounts.GetAccountList();
+
+			var accEnumerable = from a in accList
+				where Context.Guild.GetUser(a.Id) != null
+				select a;	
+
+			var guildAccList = accEnumerable.ToList().OrderByDescending(o => o.Yen).ToList();
+
+			var msg = "";
+			for (var i = 0; i < 5; i++)
+			{
+				msg += $"{1 + i}. {GetNickname(Context.Guild.GetUser(guildAccList[i].Id))} - {guildAccList[i].Yen}\n";
+			}
+
+			await Context.Channel.SendMessageAsync(msg);
+		}
 
 		private async Task<bool> CheckEnoughMoney(uint amt, UserAccount userAccount)
 		{
