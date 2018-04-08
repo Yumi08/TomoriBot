@@ -190,15 +190,23 @@ namespace TomoriBot.Modules
 			if (!CheckFunModule(Context).Result) return;
 
 			var accList = UserAccounts.GetAccountList();
-			int maxIq = accList.Max(t => t.Iq);
-			var smartest = from a in accList
+
+			var newAccList = from a in accList
+				where a != null && a.Iq != 0
+				select a;
+
+			var userAccounts = newAccList.ToList();
+			int maxIq = userAccounts.Max(t => t.Iq);
+			var smartest = from a in userAccounts
 				where a.Iq == maxIq
 				select a;
 
 			string msg = "";
 			foreach (var userAccount in smartest.ToList())
 			{
-				msg += $"- {GetNickname(Context.Guild.GetUser(userAccount.Id))}\n";
+				if (Context.Guild.GetUser(userAccount.Id) != null)
+					msg += $"- {GetNickname(Context.Guild.GetUser(userAccount.Id))}\n";
+				else msg += $"- {Context.Client.GetUser(userAccount.Id).Username}\n";
 			}
 
 			msg += $"With an IQ of {maxIq}";
