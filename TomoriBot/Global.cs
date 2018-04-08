@@ -79,6 +79,18 @@ namespace TomoriBot
 			return outputList.ToArray();
 		}
 
+		public static IEnumerable<string> Split(string str, int chunkSize)
+		{
+			return Enumerable.Range(0, str.Length / chunkSize)
+				.Select(i => str.Substring(i * chunkSize, chunkSize));
+		}
+
+		public static List<string> HelpMessages = new List<string>
+		{
+			FileUtils.GetCommandHelp(1),
+			FileUtils.GetCommandHelp(2)
+		};
+
 		/// <summary>
 		/// Returns true if the current user isn't the bot's owner
 		/// </summary>

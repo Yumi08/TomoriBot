@@ -78,6 +78,8 @@ namespace TomoriBot.Modules
 		{
 			if (!CheckEconomyEnabled(Context).Result) return;
 
+			if (amt == 0) return;
+
 			var userAccount = UserAccounts.GetAccount(Context.User);
 
 			if (await CheckEnoughMoney(amt, userAccount)) return;

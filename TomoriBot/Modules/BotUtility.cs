@@ -40,7 +40,12 @@ namespace TomoriBot.Modules
 		public async Task Help()
 		{
 			var u = Context.Message.Author;
-			await Discord.UserExtensions.SendMessageAsync(u, FileUtils.GetCommandHelp());
+
+			foreach (var message in Global.HelpMessages)
+			{
+				await u.SendMessageAsync(message);
+				await Task.Delay(500);
+			}
 		}
 
 		[Command("help")]

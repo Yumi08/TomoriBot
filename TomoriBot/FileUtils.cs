@@ -33,9 +33,9 @@ namespace TomoriBot
 			return "";
 		}
 
-		public static string GetCommandHelp()
+		public static string GetCommandHelp(int i)
 		{
-			return File.ReadAllText("SystemLang/commandHelp.txt");
+			return File.ReadAllText($"SystemLang/commandHelp{i}.txt");
 		}
 	}
 }
