@@ -19,7 +19,7 @@ namespace TomoriBot.Modules
 			var embed = new EmbedBuilder()
 			{
 				Color = new Color(220, 20, 60),
-				Title = $"{GetNickname(user)}'s Stats"
+				Title = $"{GetNickname(user)}'s Stat"
 			};
 
 			embed.WithDescription($"Money: ¥{userAccount.Yen}\n" +

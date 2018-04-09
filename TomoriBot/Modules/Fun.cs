@@ -4,7 +4,9 @@ using Discord.WebSocket;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using Discord;
 using Newtonsoft.Json;
 using TomoriBot.Core.UserProfiles;
@@ -191,12 +193,11 @@ namespace TomoriBot.Modules
 		{
 			if (!CheckFunEnabled(Context).Result) return;
 
-			var guildContextUser = (SocketGuildUser) Context.User;
 			var userAccount = UserAccounts.GetAccount(Context.User);
 
 			if (userAccount.PickleSize.Equals(0f))
 			{
-				userAccount.PickleSize = (float)Math.Round(NextFloat(0f, 12f), 2);
+				userAccount.PickleSize = (float)Math.Round(NextFloat(0.01f, 12f), 2);
 				await Context.Channel.SendMessageAsync(
 					$"{GetNickname((SocketGuildUser) Context.User)} has a pickle size of {userAccount.PickleSize}in!");
 
@@ -212,18 +213,17 @@ namespace TomoriBot.Modules
 			if (!CheckFunEnabled(Context).Result) return;
 
 			var userAccount = UserAccounts.GetAccount(user);
-
 			if (userAccount.PickleSize.Equals(0f))
 			{
-				userAccount.PickleSize = (float)Math.Round(NextFloat(0f, 12f), 2);
+				userAccount.PickleSize = (float)Math.Round(NextFloat(0.01f, 12f), 2);
 				await Context.Channel.SendMessageAsync(
-					$"{GetNickname((SocketGuildUser) Context.User)} has a pickle size of {userAccount.PickleSize}in!");
+					$"{GetNickname(user)} has a pickle size of {userAccount.PickleSize}in!");
 
 				UserAccounts.SaveAccounts();
 			}
 			else
 				await Context.Channel.SendMessageAsync(
-					$"{GetNickname((SocketGuildUser) Context.User)} has a pickle size of {userAccount.PickleSize}in!");
+					$"{GetNickname(user)} has a pickle size of {userAccount.PickleSize}in!");
 		}
 
 		[Command("smartest")]
@@ -280,6 +280,73 @@ namespace TomoriBot.Modules
 			public int Weight { get; set; }
 			public string Name { get; set; }
 		}
+
+		//private readonly SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
+
+		//[Command("resetstat")]
+		//public async Task ResetStat([Remainder] string stat)
+		//{
+		//	if (!CheckFunEnabled(Context).Result) return;
+
+		//	switch (stat.ToLower())
+		//	{
+		//		case "iq":
+		//		case "intelligence":
+		//			await Context.Channel.SendMessageAsync("Are you sure you want to reset your IQ for ¥1000?");
+		//			await WaitForInput(Context, UserAccount.Stat.Iq);
+		//			break;
+
+		//		case "pickle":
+		//		case "picklesize":
+		//			await Context.Channel.SendMessageAsync("Are you sure you want to reset your pickle size for ¥1000?");
+		//			await WaitForInput(Context, UserAccount.Stat.Picklesize);
+		//			break;
+
+		//		default:
+		//			await Context.Channel.SendMessageAsync("Unknown stat! See help for usage.");
+		//			return;
+		//	}
+		//}
+
+		//public async Task WaitForInput(SocketCommandContext context, UserAccount.Stat stat)
+		//{
+		//	var userAccount = UserAccounts.GetAccount(context.User);
+
+		//	string receivedMsg = null;
+		//	CommandHandler.MessageReceived += (sender, e) =>
+		//	{
+		//		receivedMsg = e.Msg.Content;
+		//	};
+
+		//	await Task.Delay(5000);
+		//	if (receivedMsg == null)
+		//	{
+		//		await Context.Channel.SendMessageAsync("Cancelling command!");
+		//		return;
+		//	}
+
+		//	if (receivedMsg.ToLower() == "y")
+		//	{
+		//		userAccount.PickleSize = (float)Math.Round(NextFloat(0.01f, 12f), 2);
+		//		switch (stat)
+		//		{
+		//			case UserAccount.Stat.Iq:
+		//				ushort iq = (ushort) R.Next(1, 200);
+		//				userAccount.Iq = iq;
+		//				await Context.Channel.SendMessageAsync(
+		//					$"{GetNickname((SocketGuildUser)context.User)} has an IQ of {userAccount.Iq}!");
+		//				break;
+		//			case UserAccount.Stat.Picklesize:
+		//				userAccount.PickleSize = (float)Math.Round(NextFloat(0.01f, 12f), 2);
+		//				await Context.Channel.SendMessageAsync(
+		//					$"{GetNickname((SocketGuildUser)context.User)} has a pickle size of {userAccount.PickleSize}in!");
+		//				break;
+		//		}
+
+		//		userAccount.Yen -= 1000;
+		//		UserAccounts.SaveAccounts();
+		//	}
+		//}
 
 		[Command("fishy")]
 		public async Task Fishy()

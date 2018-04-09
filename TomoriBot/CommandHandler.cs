@@ -11,7 +11,7 @@ namespace TomoriBot
 {
 	class CommandHandler
 	{
-		public event EventHandler<MessageReceievedEventArgs> MessageReceived; 
+		public static event EventHandler<MessageReceievedEventArgs> MessageReceived; 
 
 		private DiscordSocketClient _client;
 		private CommandService _service;

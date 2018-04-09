@@ -27,6 +27,9 @@ namespace TomoriBot.Core.UserProfiles
 
 		public uint LevelNumber => (uint)Math.Sqrt(Experience / 50);
 
+		// STATS
+		public enum Stat {Iq, Picklesize}
+
 		public ushort Iq { get; set; }
 
 		public float PickleSize { get; set; }
