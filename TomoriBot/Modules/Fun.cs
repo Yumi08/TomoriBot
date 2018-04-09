@@ -164,10 +164,11 @@ namespace TomoriBot.Modules
 				ushort iq = (ushort) Global.R.Next(1, 200);
 				userAccount.Iq = iq;
 				await Context.Channel.SendMessageAsync($"{GetNickname(guildContextUser)} has an IQ of {iq}!");
+
+				UserAccounts.SaveAccounts();
 			}
 			else await Context.Channel.SendMessageAsync($"{GetNickname(guildContextUser)} has an IQ of {userAccount.Iq}!");
 		}
-
 		[Command("iq")]
 		[Alias("intelligence")]
 		public async Task Intelligence(SocketGuildUser user)
@@ -183,6 +184,46 @@ namespace TomoriBot.Modules
 				await Context.Channel.SendMessageAsync($"{GetNickname(user)} has an IQ of {iq}!");
 			}
 			else await Context.Channel.SendMessageAsync($"{GetNickname(user)} has an IQ of {userAccount.Iq}!");
+		}
+
+		[Command("picklesize")]
+		public async Task PickleSize()
+		{
+			if (!CheckFunEnabled(Context).Result) return;
+
+			var guildContextUser = (SocketGuildUser) Context.User;
+			var userAccount = UserAccounts.GetAccount(Context.User);
+
+			if (userAccount.PickleSize.Equals(0f))
+			{
+				userAccount.PickleSize = (float)Math.Round(NextFloat(0f, 12f), 2);
+				await Context.Channel.SendMessageAsync(
+					$"{GetNickname((SocketGuildUser) Context.User)} has a pickle size of {userAccount.PickleSize}in!");
+
+				UserAccounts.SaveAccounts();
+			}
+			else
+				await Context.Channel.SendMessageAsync(
+					$"{GetNickname((SocketGuildUser) Context.User)} has a pickle size of {userAccount.PickleSize}in!");
+		}
+		[Command("picklesize")]
+		public async Task PickleSize(SocketGuildUser user)
+		{
+			if (!CheckFunEnabled(Context).Result) return;
+
+			var userAccount = UserAccounts.GetAccount(user);
+
+			if (userAccount.PickleSize.Equals(0f))
+			{
+				userAccount.PickleSize = (float)Math.Round(NextFloat(0f, 12f), 2);
+				await Context.Channel.SendMessageAsync(
+					$"{GetNickname((SocketGuildUser) Context.User)} has a pickle size of {userAccount.PickleSize}in!");
+
+				UserAccounts.SaveAccounts();
+			}
+			else
+				await Context.Channel.SendMessageAsync(
+					$"{GetNickname((SocketGuildUser) Context.User)} has a pickle size of {userAccount.PickleSize}in!");
 		}
 
 		[Command("smartest")]

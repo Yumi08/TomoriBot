@@ -60,7 +60,9 @@ namespace TomoriBot.Core.UserProfiles
 			{
 				Id = id,
 				Yen = 500,
-				Experience = 0
+				Experience = 0,
+				Iq = 0,
+				PickleSize = 0
 			};
 
 			_accounts.Add(newAccount);

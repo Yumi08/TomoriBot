@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Discord;
 
 namespace TomoriBot.Core.UserProfiles
 {
@@ -29,6 +28,8 @@ namespace TomoriBot.Core.UserProfiles
 		public uint LevelNumber => (uint)Math.Sqrt(Experience / 50);
 
 		public ushort Iq { get; set; }
+
+		public float PickleSize { get; set; }
 
 		#region Tags
 		public readonly Dictionary<ulong, string> Tags = new Dictionary<ulong, string>();

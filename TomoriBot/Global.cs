@@ -15,6 +15,11 @@ namespace TomoriBot
 	{
 		public static Random R = new Random();
 
+		public static float NextFloat(float minimum, float maximum)
+		{
+			return (float)R.NextDouble() * (maximum - minimum) + minimum;
+		}
+
 		/// <summary>
 		/// Gets time since 1/1/2000.
 		/// </summary>
