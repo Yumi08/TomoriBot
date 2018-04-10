@@ -13,7 +13,7 @@ namespace TomoriBot.Modules
 	public class Economy : ModuleBase<SocketCommandContext>
 	{
 		[Command("transfer")]
-		[Alias("give")]
+		[Alias("give", "donate")]
 		public async Task Transfer(SocketGuildUser recipient, uint amt)
 		{
 			if (!CheckEconomyEnabled(Context).Result) return;
@@ -48,7 +48,7 @@ namespace TomoriBot.Modules
 
 			userAccount.Yen -= amt;
 
-			if (Global.R.Next(2) == 1)
+			if (R.Next(2) == 1)
 			{
 				await Context.Channel.SendMessageAsync($"Congratulations! You just won ¥{amt * 2}!");
 				userAccount.Yen += amt * 2;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
 using TomoriBot.Core.Guilds;
@@ -10,7 +11,9 @@ namespace TomoriBot.Core.LevelingSystem
 {
 	internal static class Leveling
 	{
-		private static readonly int[] MessageMilestones = new[] {100, 500, 1000, 5000, 10000, 25000, 50000, 100000};
+		private static readonly int[] MessageMilestones = {100, 500, 1000, 5000, 10000, 25000, 50000, 100000};
+		private static readonly uint[,] LevelMilestones = { {10, 500}, {20, 2500}, {30, 7500}, {40, 15000}, {50, 35000},
+			{55, 45000}, {60, 60000}, {65, 75000}, {70, 85000}, {75, 95000}, {80, 110000}, {85, 125000}, {90, 135000}, {95, 150000}, {100, 200000}};
 
 		/// <summary>
 		/// Fires whenever a user sends a message that the bot can see
@@ -37,9 +40,22 @@ namespace TomoriBot.Core.LevelingSystem
 				if (oldLevel != userAccount.LevelNumber)
 				{
 					await context.Channel.SendMessageAsync(GetNickname((SocketGuildUser)context.User) + " just leveled up to level " + userAccount.LevelNumber + "!");
+					await LevelRewards(context, userAccount);
 				}
 
 				UserAccounts.SaveAccounts();
+			}
+		}
+
+		private static async Task LevelRewards(SocketCommandContext context, UserAccount userAccount)
+		{
+			for (var x = 0; x < LevelMilestones.GetLength(0); x++)
+			{
+				if (userAccount.LevelNumber == LevelMilestones[x, 0])
+				{
+					userAccount.Yen += LevelMilestones[x, 1];
+					await context.Channel.SendMessageAsync($"Congratulations on leveling up to lvl {userAccount.LevelNumber}! You received ¥{LevelMilestones[x, 1]}!");
+				}
 			}
 		}
 

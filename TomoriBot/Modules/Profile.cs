@@ -19,13 +19,18 @@ namespace TomoriBot.Modules
 			var embed = new EmbedBuilder()
 			{
 				Color = new Color(220, 20, 60),
-				Title = $"{GetNickname(user)}'s Stat"
+				Title = $"{GetNickname(user)}'s Profile",
 			};
 
-			embed.WithDescription($"Money: ¥{userAccount.Yen}\n" +
-			                      $"Level: {userAccount.LevelNumber}\n" +
-			                      $"XP: {userAccount.Experience}\n" +
-			                      $"Total Messages: {userAccount.TotalMessages}");
+			embed.AddInlineField("Money", $"¥{userAccount.Yen}");
+			embed.AddInlineField("Level", userAccount.LevelNumber);
+			embed.AddInlineField("XP", userAccount.Experience);
+			embed.AddInlineField("Total Messages", userAccount.TotalMessages);
+
+			//embed.WithDescription($"Money: ¥{userAccount.Yen}\n" +
+			//                      $"Level: {userAccount.LevelNumber}\n" +
+			//                      $"XP: {userAccount.Experience}\n" +
+			//                      $"Total Messages: {userAccount.TotalMessages}");
 
 			await Context.Channel.SendMessageAsync("", embed: embed);
 		}

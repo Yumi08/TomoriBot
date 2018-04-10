@@ -154,5 +154,31 @@ namespace TomoriBot.Modules
 
 			await Context.Channel.SendMessageAsync("Thank you so much for your feedback!");
 		}
+
+		//private static readonly uint[,] LevelMilestones = { {10, 500}, {20, 2500}, {30, 7500}, {40, 15000}, {50, 35000},
+		//	{55, 45000}, {60, 60000}, {65, 75000}, {70, 85000}, {75, 95000}, {80, 110000}, {85, 125000}, {90, 135000}, {95, 150000}, {100, 200000}};
+
+		// One-shot command after implimenting the level rewards system
+		//[Command("updatelvls")]
+		//public async Task UpdateLvls()
+		//{
+		//	foreach (var account in UserAccounts.GetAccountList())
+		//	{
+		//		var toAdd = 0u;
+
+		//		for (var x = 0; x < LevelMilestones.GetLength(0); x++)
+		//		{
+		//			if (account.LevelNumber >= LevelMilestones[x, 0])
+		//			{
+		//				toAdd += LevelMilestones[x, 1];
+		//			}
+		//		}
+
+		//		await Context.Client.GetUser(account.Id).SendMessageAsync($"A new level rewards system is being put into place, and it seems that you are already lvl {account.LevelNumber}!" +
+		//		                                                          $" So congratulations, you get a reward of ¥{toAdd}!");
+		//		account.Yen += toAdd;
+		//		UserAccounts.SaveAccounts();
+		//	}
+		//}
 	}
 }
