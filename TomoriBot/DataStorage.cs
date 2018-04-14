@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace TomoriBot
 {
-	class DataStorage<TKey, TValue>
+	public class DataStorage<TKey, TValue>
 	{
 		private string filePath;
 
@@ -22,6 +23,11 @@ namespace TomoriBot
 			_pairs.Add(key, value);
 			SaveData();
 			return true;
+		}
+
+		public bool PairExists(TKey key)
+		{
+			return _pairs.ContainsKey(key);
 		}
 
 		public TValue GetPair(TKey key, out bool success)
@@ -95,5 +101,51 @@ namespace TomoriBot
 			return false;
 
 		}
+	}
+
+	public class DataStorage<T>
+	{
+		public DataStorage(string filePath)
+		{
+			_list = new List<T>();
+			this._filePath = filePath;
+		}
+
+		private List<T> _list;
+		private string _filePath;
+
+		#region Helper Methods
+
+		public List<T> ReturnList()
+		{
+			return _list;
+		}
+
+		public bool Add(T addition)
+		{
+			var listOfMatching = from a in _list
+				where a.Equals(addition)
+				select a;
+			bool alreadyExists = listOfMatching.Any();
+
+			if (alreadyExists) return false;
+
+			_list.Add(addition);
+			SaveData();
+
+			return true;
+		}
+		
+		#endregion
+
+		#region Json Methods
+
+		public void SaveData()
+		{
+			string json = JsonConvert.SerializeObject(_list, Formatting.Indented);
+			File.WriteAllText(_filePath,json);
+		}
+
+		#endregion
 	}
 }

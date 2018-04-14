@@ -49,6 +49,7 @@ namespace TomoriBot.Core.LevelingSystem
 
 		private static async Task LevelRewards(SocketCommandContext context, UserAccount userAccount)
 		{
+			// Use GetLength since it's a multidimensional array
 			for (var x = 0; x < LevelMilestones.GetLength(0); x++)
 			{
 				if (userAccount.LevelNumber == LevelMilestones[x, 0])

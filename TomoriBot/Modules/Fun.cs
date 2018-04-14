@@ -18,11 +18,11 @@ namespace TomoriBot.Modules
 	{
 		[Command("pick")]
 		[Alias("choose")]
-		public async Task Choose([Remainder]string input)
+		public async Task Choose([Remainder] string input)
 		{
 			if (!CheckFunEnabled(Context).Result) return;
 
-			var args = input.Split(new [] {','}, StringSplitOptions.RemoveEmptyEntries);
+			var args = input.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
 
 			var m = await Context.Channel.SendMessageAsync("Hmm.....");
 
@@ -31,8 +31,97 @@ namespace TomoriBot.Modules
 			await m.ModifyAsync(x => x.Content = args[R.Next(args.Length)]);
 		}
 
+		[Command("rate")]
+		public async Task Rate([Remainder] string input)
+		{
+			var ds = new DataStorage<string, ushort>("Storage/RateStringStorage.json");
+			ushort value = 0;
+
+			if (!ds.PairExists(input.ToLower()))
+			{
+				value = (ushort)R.Next(11);
+				ds.SetPair(input.ToLower(), value);
+			}
+			else
+			{
+				value = ds.GetPair(input.ToLower());
+			}
+
+			await Context.Channel.SendMessageAsync($"I give {input} a {value}/10!");
+		}
+
+		[Command("rate")]
+		public async Task Rate(SocketGuildUser targetUser)
+		{
+			var ds = new DataStorage<ulong, ushort>("Storage/RateUserStorage.json");
+			ushort value = 0;
+
+			if (!ds.PairExists(targetUser.Id))
+			{
+				value = (ushort)R.Next(11);
+				ds.SetPair(targetUser.Id, value);
+			}
+			else
+			{
+				value = ds.GetPair(targetUser.Id);
+			}
+
+			await Context.Channel.SendMessageAsync($"I give {GetNickname(targetUser)} a {value}/10!");
+		}
+
+		[Command("amt")]
+		public async Task Amt(SocketGuildUser targetUser, [Remainder] string thing)
+		{
+			var ds = new DataStorage<AmtObject>("Storage/AmtStorage.json");
+			var amt = new AmtObject { User = targetUser, Thing = thing.ToLower() };
+			ushort percentage = 0;
+
+			var listOfMatching = from a in ds.ReturnList()
+				where a.Equals(amt)
+				select a;
+			bool exists = listOfMatching.Any();
+
+			// If the object doesn't already exist in storage
+			if (!exists)
+			{
+				percentage = (ushort)R.Next(101);
+				amt.Value = percentage;
+				ds.Add(amt);
+			}
+
+			var obj = from a in ds.ReturnList()
+				where a.Equals(amt)
+				select a.Value;
+			percentage = obj.FirstOrDefault();
+
+			await Context.Channel.SendMessageAsync($"{GetNickname(targetUser)} is {percentage}% {thing}");
+		}
+
+		private struct AmtObject
+		{
+			/// <summary>
+			/// The target user
+			/// </summary>
+			public SocketGuildUser User { get; set; }
+
+			/// <summary>
+			/// The thing that the user is an amount of
+			/// </summary>
+			public string Thing { get; set; }
+
+			/// <summary>
+			/// The amount the user is of a thing
+			/// </summary>
+			public ushort Value { get; set; }
+
+			public bool Equals(AmtObject obj)
+			{
+				return User == obj.User && Thing == obj.Thing;
+			}
+		}
+
 		[Command("tag")]
-		public async Task Tag(SocketGuildUser user, [Remainder]string value)
+		public async Task Tag(SocketGuildUser user, [Remainder] string value)
 		{
 			if (!CheckFunEnabled(Context).Result) return;
 
@@ -148,7 +237,7 @@ namespace TomoriBot.Modules
 			else winner = guildContextUser;
 
 			await m.ModifyAsync(msg => msg.Content = $"{GetNickname(winner)} won!\n" +
-													 $"[{GetNickname(guildContextUser)} - {hands[user1Hand]}]" +
+			                                         $"[{GetNickname(guildContextUser)} - {hands[user1Hand]}]" +
 			                                         $" vs [{GetNickname(user)} - {hands[user2Hand]}]");
 		}
 
@@ -171,6 +260,7 @@ namespace TomoriBot.Modules
 			}
 			else await Context.Channel.SendMessageAsync($"{GetNickname(guildContextUser)} has an IQ of {userAccount.Iq}!");
 		}
+
 		[Command("iq")]
 		[Alias("intelligence")]
 		public async Task Intelligence(SocketGuildUser user)
@@ -197,7 +287,7 @@ namespace TomoriBot.Modules
 
 			if (userAccount.PickleSize.Equals(0f))
 			{
-				userAccount.PickleSize = (float)Math.Round(NextFloat(0.01f, 12f), 2);
+				userAccount.PickleSize = (float) Math.Round(NextFloat(0.01f, 12f), 2);
 				await Context.Channel.SendMessageAsync(
 					$"{GetNickname((SocketGuildUser) Context.User)} has a pickle size of {userAccount.PickleSize}in!");
 
@@ -207,6 +297,7 @@ namespace TomoriBot.Modules
 				await Context.Channel.SendMessageAsync(
 					$"{GetNickname((SocketGuildUser) Context.User)} has a pickle size of {userAccount.PickleSize}in!");
 		}
+
 		[Command("picklesize")]
 		public async Task PickleSize(SocketGuildUser user)
 		{
@@ -215,7 +306,7 @@ namespace TomoriBot.Modules
 			var userAccount = UserAccounts.GetAccount(user);
 			if (userAccount.PickleSize.Equals(0f))
 			{
-				userAccount.PickleSize = (float)Math.Round(NextFloat(0.01f, 12f), 2);
+				userAccount.PickleSize = (float) Math.Round(NextFloat(0.01f, 12f), 2);
 				await Context.Channel.SendMessageAsync(
 					$"{GetNickname(user)} has a pickle size of {userAccount.PickleSize}in!");
 
@@ -235,7 +326,7 @@ namespace TomoriBot.Modules
 
 			var accEnumerable = from a in accList
 				where Context.Guild.GetUser(a.Id) != null
-				select a;	
+				select a;
 
 			var guildAccList = accEnumerable.ToList().OrderByDescending(o => o.Iq).ToList();
 
@@ -245,11 +336,13 @@ namespace TomoriBot.Modules
 			};
 			for (var i = 0; i < 5; i++)
 			{
-				embed.Description += $"{1 + i}. {GetNickname(Context.Guild.GetUser(guildAccList[i].Id))} - {guildAccList[i].Iq} IQ\n";
+				embed.Description +=
+					$"{1 + i}. {GetNickname(Context.Guild.GetUser(guildAccList[i].Id))} - {guildAccList[i].Iq} IQ\n";
 			}
 
 			await Context.Channel.SendMessageAsync("", embed: embed);
 		}
+
 		[Command("dumbest")]
 		public async Task Dumbest()
 		{
@@ -259,7 +352,7 @@ namespace TomoriBot.Modules
 
 			var accEnumerable = from a in accList
 				where Context.Guild.GetUser(a.Id) != null && a.Iq != 0
-				select a;	
+				select a;
 
 			var guildAccList = accEnumerable.ToList().OrderBy(o => o.Iq).ToList();
 
@@ -269,7 +362,8 @@ namespace TomoriBot.Modules
 			};
 			for (var i = 0; i < 5; i++)
 			{
-				embed.Description += $"{1 + i}. {GetNickname(Context.Guild.GetUser(guildAccList[i].Id))} - {guildAccList[i].Iq} IQ\n";
+				embed.Description +=
+					$"{1 + i}. {GetNickname(Context.Guild.GetUser(guildAccList[i].Id))} - {guildAccList[i].Iq} IQ\n";
 			}
 
 			await Context.Channel.SendMessageAsync("", embed: embed);
@@ -355,17 +449,17 @@ namespace TomoriBot.Modules
 
 			var fishEmotes = new List<FishEmote>()
 			{
-				new FishEmote{Name = ":octopus:", Weight = 5},
-				new FishEmote{Name = ":crab:", Weight = 20},
-				new FishEmote{Name = ":fish:", Weight = 70},
-				new FishEmote{Name = ":tropical_fish:", Weight = 50},
-				new FishEmote{Name = ":blowfish:", Weight = 30},
-				new FishEmote{Name = ":shark:", Weight = 10},
-				new FishEmote{Name = ":shrimp:", Weight = 20},
-				new FishEmote{Name = ":dolphin:", Weight = 3},
-				new FishEmote{Name = ":whale:", Weight = 1},
-				new FishEmote{Name = ":squid:", Weight = 15},
-				new FishEmote{Name = ":whale2:", Weight = 1}
+				new FishEmote {Name = ":octopus:", Weight = 5},
+				new FishEmote {Name = ":crab:", Weight = 20},
+				new FishEmote {Name = ":fish:", Weight = 70},
+				new FishEmote {Name = ":tropical_fish:", Weight = 50},
+				new FishEmote {Name = ":blowfish:", Weight = 30},
+				new FishEmote {Name = ":shark:", Weight = 10},
+				new FishEmote {Name = ":shrimp:", Weight = 20},
+				new FishEmote {Name = ":dolphin:", Weight = 3},
+				new FishEmote {Name = ":whale:", Weight = 1},
+				new FishEmote {Name = ":squid:", Weight = 15},
+				new FishEmote {Name = ":whale2:", Weight = 1}
 			};
 
 			FishEmote randomEmote = WeightedRandomization.Choose(fishEmotes);
